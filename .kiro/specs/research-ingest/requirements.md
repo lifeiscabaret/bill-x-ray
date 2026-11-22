@@ -181,17 +181,23 @@ and to recheck what the demo depends on, so that the samples rest on checked fac
 
 #### Acceptance Criteria
 
-1. THE Gold_Set SHALL start with the 18 cases the research run log lists as matched one to
-   one: B3a-CASE-0002, 0003, 0004, 0006 and 0009; B3b-CASE-0011, 0012, 0013, 0014, 0015 and
-   0017; B4-CASE-0001 to 0007.
+1. THE Gold_Set SHALL hold 19 cases: the 18 the research run log lists as matched one to one
+   (B3a-CASE-0002, 0003, 0004, 0006 and 0009; B3b-CASE-0011, 0012, 0013, 0014, 0015 and
+   0017; B4-CASE-0001 to 0007) and the Korean demo sample B3a-CASE-0001, which stays in only
+   under criterion 3 (decision D-006).
 2. THE Gold_Set SHALL record, per case, which evidence Rows and paths are confirmed and which
    are not, and a test SHALL fail if a later change flips any of them without a line in
    `docs/DECISIONS.md`.
-3. THE team SHALL recheck B3a-CASE-0001 (Semiconductor Special Act) against the official
-   links in the handover (original bill 2205453, committee alternative 2215103, Act No.
-   21337): the texts of the original §15 and §33 and of the Act's §18 and §33, the effective
-   date, and the two discard dates in the research (2025-12-04 and 2026-01-29). Today 0 of
-   its 5 evidence Rows match word for word.
+3. THE team SHALL recheck B3a-CASE-0001 (Semiconductor Special Act), for which no research
+   Row matches today (0 of 5), under decision D-006: the person who rechecks opens the
+   official originals (국회 의안정보시스템 for original bill 2205453 and committee
+   alternative 2215103; 국가법령정보센터 for Act No. 21337) and records, exactly as written,
+   the clause anchors and excerpts of the original §15 and §33, the Act's §18 and §33 and the
+   effective-date provision, and the two discard dates in the research (2025-12-04 and
+   2026-01-29); a different person opens the same pages separately, and each row that matches
+   counts as matched (일치) under D-001. IF a row the Korean demo relies on cannot be
+   confirmed, THEN THE team SHALL remove B3a-CASE-0001 from the demo and SHALL NOT lower the
+   gate.
 4. THE team SHALL recheck, against the handover's official links (BILLS-116hr748enr and
    PLAW-116publ94), the two H.R. 748 items the demo needs that are not yet matched: the short
    title in §1 of the 2020 enrolled text (no research Row exists) and P.L. 116-94 Div. N,

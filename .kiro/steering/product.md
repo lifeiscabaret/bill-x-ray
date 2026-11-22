@@ -79,8 +79,13 @@ the UI is distinctive and functional enough. Two countries in one app is not Ske
 - Every line rests on official evidence or shows its unverified state.
 - Claims about what Kiro contributed rest only on real tests and the change history.
 
+## Decided
+- Entry name: Seoul Economic Daily as an organization, for both its entries, approved by
+  the company's representative (`docs/DECISIONS.md` D-007).
+- Code license: MIT, copyright holder Seoul Economic Daily (D-005).
+- The Korean sample stays in the demo only if its evidence is confirmed under D-006.
+
 ## Decisions not yet made
-Submission approval and how the entry is labelled, the GitHub account and public
-repository, the data license, rights to the Seoul Economic Daily newsroom legislative
-tracking project (brand, data/API, article redistribution) and deployment. Nothing in this
-repository authorizes them.
+The data license, rights to the Seoul Economic Daily newsroom legislative tracking project
+(brand, data/API, article redistribution), deployment and the act of submitting. Nothing in
+this repository authorizes them.

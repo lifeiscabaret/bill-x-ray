@@ -35,10 +35,12 @@ Load a row only if all three hold:
 1. Its cited sources opened and its evidence matched, according to the verification
    ledger (D-001).
 2. For cases, `confidence` is `high` or `medium`.
-3. Cross-review classified the row as "load as is". For the 18 gold (demo) cases only, a
+3. Cross-review classified the row as "load as is". For the 19 gold (demo) cases only, a
    team recheck stands in for cross-review when the person who rechecks and the person who
    confirms are different and both open the official URL; `data/verification/` records
-   who (role A or B), when, the URL and the result (D-002).
+   who (role A or B), when, the URL and the result (D-002, D-006). For B3a-CASE-0001, which
+   has no matched research row, a row confirmed this way counts as matched under D-001; if
+   it cannot be confirmed, the case leaves the demo and the gate stays as it is (D-006).
 
 Rows that fail stay out and are listed in the load report with the reason. Any change to
 this gate is recorded in `docs/DECISIONS.md`.

@@ -61,6 +61,9 @@ text.
    same contract, with no country-specific branches.
 3. THE Scan_Screen SHALL NOT describe the clause missing from the Korean final text as
    abolished, failed or gone for good.
+4. IF the evidence the Korean Sample relies on cannot be confirmed under decision D-006, THEN
+   THE team SHALL remove that Sample from the demo instead of lowering the evidence gate; the
+   product owner decides whether another case replaces it.
 
 ### Requirement 3: Evidence panel
 
