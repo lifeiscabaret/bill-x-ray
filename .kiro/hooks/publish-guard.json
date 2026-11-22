@@ -3,12 +3,12 @@
   "hooks": [
     {
       "name": "publish-guard",
-      "description": "Keep internal research material and API keys out of the public repository",
+      "description": "Keep internal research material, internal handover documents and API keys out of the public repository. Switch to a command action running `npm run --silent check:repo` once that script exists (data-contract tasks).",
       "trigger": "PostFileSave",
-      "matcher": "(^|/)research/(raw|review|meta)/|_검수\\.md$|RUN_LOG_|RUN_PROMPT_|_다음작업\\.md$|00_설계_및_실행가이드\\.md$|(^|/)\\.env",
+      "matcher": "(^|[\\\\/])research[\\\\/](raw|review|meta|verify|jsonl)[\\\\/]|(^|[\\\\/])_internal[\\\\/]|_HANDOVER_|_WORK_ORDER_|_검수[^\\\\/]*\\.md$|RUN_LOG_|RUN_PROMPT_|VERIFY_LOG_|_다음작업\\.md$|열람확인|_표본확인_목록|00_설계_및_실행가이드\\.md$|00_읽어주세요\\.md$|(^|[\\\\/])\\.env",
       "action": {
         "type": "agent",
-        "prompt": "This file looks like internal material that must not be in the public repository: raw deep-research reports, review packets, run logs, the research kit guide (it contains team member names), or a secrets file. Do not commit it. Tell the user which file it is and ask them to move it outside the repository. If it is a .env file, make sure it is listed in .gitignore and that no API key (for example a 국가법령정보센터 OC value or a Congress.gov api_key) appears in tracked files."
+        "prompt": "This file looks like internal material that must not be in the public repository: deep-research reports, review packets, extracted research rows, run logs, verification ledgers, the research kit guide or the internal handover documents (they contain team member names and article excerpts), or a secrets file. Do not commit it. Tell the user which file it is and ask them to move it outside the repository. If it is a .env file, make sure .gitignore covers it and that no API key (for example a 국가법령정보센터 OC value or a Congress.gov api_key) appears in tracked files."
       },
       "enabled": true
     }

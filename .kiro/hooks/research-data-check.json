@@ -3,12 +3,12 @@
   "hooks": [
     {
       "name": "research-data-check",
-      "description": "Check saved research data files against .kiro/steering/research-data.md",
+      "description": "Check saved case and verification data against the data contract and .kiro/steering/research-data.md. Switch to a command action running `npm run --silent validate:data` once that script exists (data-contract tasks).",
       "trigger": "PostFileSave",
-      "matcher": "(^|/)data/.*\\.(jsonl|json)$",
+      "matcher": "(^|[\\\\/])data[\\\\/](cases|verification)[\\\\/][^\\\\/]+\\.(json|jsonl)$",
       "action": {
         "type": "agent",
-        "prompt": "A research data file was saved. Check it against .kiro/steering/research-data.md: every row has type and id; references resolve (from_ref and to_ref may be \"promise\"); dates are YYYY-MM-DD, YYYY-MM, YYYY or unknown and carry a date kind; url, official_url and base_url contain no U+2236 or U+00B7 look-alike characters; null, empty or \"unknown\" URLs count as missing; news excerpts are at most 200 characters and official excerpts at most 300; case.domain uses the 12 Korean field names; only rows that pass the loading gate are present. Report each problem with its row id. Do not invent or fill in missing values."
+        "prompt": "A case or verification data file was saved. Check it against the data contract (.kiro/specs/data-contract/) and .kiro/steering/research-data.md: every document version has documentId, versionId, title, publisher and a sourceUrl or an explicit missing value; every evidence row points to an existing document version and has an anchor and a short original-language excerpt (news at most 200 characters, official documents at most 300); translations are labelled and never used as evidence; every date has a kind and the format YYYY-MM-DD, YYYY-MM, YYYY or unknown, and no date was computed from another; URLs contain no U+2236 or U+00B7 look-alike characters, and null, empty or \"unknown\" URLs count as missing; every path has evidenceRefs that resolve, and no path is marked confirmed unless all of its evidence passed the evidence gate; only rows that passed the loading gate are present. Report each problem with its JSON path or id. Do not invent or fill in missing values."
       },
       "enabled": true
     }

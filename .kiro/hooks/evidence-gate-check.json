@@ -3,12 +3,12 @@
   "hooks": [
     {
       "name": "evidence-gate-check",
-      "description": "Re-check the evidence gate when CasePack, evidence or gate files change",
+      "description": "Re-check the evidence gate when data contract, path status or ingest code changes. Switch to a command action running the gate tests once they exist (data-contract and research-ingest tasks).",
       "trigger": "PostFileSave",
-      "matcher": "(CasePack|casepack|case-pack|evidence|Evidence|gate|Gate)[^/]*\\.(ts|tsx|js|json|jsonl)$",
+      "matcher": "(^|[\\\\/])src[\\\\/](contract|ingest)[\\\\/][^\\\\/]+\\.ts$",
       "action": {
         "type": "agent",
-        "prompt": "CasePack, evidence or gate code changed. For every verdict marked as passed, confirm that it has an official URL in the original language, a clause anchor and an original-language excerpt that match one to one, and that the evidence row has verified_opened true. A translation must never count as evidence. Any verdict that fails is blocked (✕) and shown as unconfirmed. Run the gate tests and report failures with case ids."
+        "prompt": "Data contract, path status or ingest code changed. For every path that can be marked confirmed, confirm that each of its evidence rows has an official URL in the original language, a clause anchor and an original-language excerpt that match one to one, and that the evidence was opened and checked. A translation, a shared bill number or text similarity must never count as evidence. A path that fails keeps an unverified state (such as Not verified, Evidence missing or Omission not verified) and is never shown as confirmed. Run the gate tests if they exist and report failures with case and evidence ids."
       },
       "enabled": true
     }
