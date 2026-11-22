@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "research-data-check",
+      "description": "Check saved research data files against .kiro/steering/research-data.md",
+      "trigger": "PostFileSave",
+      "matcher": "(^|/)data/.*\\.(jsonl|json)$",
+      "action": {
+        "type": "agent",
+        "prompt": "A research data file was saved. Check it against .kiro/steering/research-data.md: every row has type and id; references resolve (from_ref and to_ref may be \"promise\"); dates are YYYY-MM-DD, YYYY-MM, YYYY or unknown and carry a date kind; url, official_url and base_url contain no U+2236 or U+00B7 look-alike characters; null, empty or \"unknown\" URLs count as missing; news excerpts are at most 200 characters and official excerpts at most 300; case.domain uses the 12 Korean field names; only rows that pass the loading gate are present. Report each problem with its row id. Do not invent or fill in missing values."
+      },
+      "enabled": true
+    }
+  ]
+}

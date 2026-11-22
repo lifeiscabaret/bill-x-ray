@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "evidence-gate-check",
+      "description": "Re-check the evidence gate when CasePack, evidence or gate files change",
+      "trigger": "PostFileSave",
+      "matcher": "(CasePack|casepack|case-pack|evidence|Evidence|gate|Gate)[^/]*\\.(ts|tsx|js|json|jsonl)$",
+      "action": {
+        "type": "agent",
+        "prompt": "CasePack, evidence or gate code changed. For every verdict marked as passed, confirm that it has an official URL in the original language, a clause anchor and an original-language excerpt that match one to one, and that the evidence row has verified_opened true. A translation must never count as evidence. Any verdict that fails is blocked (✕) and shown as unconfirmed. Run the gate tests and report failures with case ids."
+      },
+      "enabled": true
+    }
+  ]
+}

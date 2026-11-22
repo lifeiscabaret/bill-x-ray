@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "ui-wording-check",
+      "description": "Keep UI copy to record-state wording (.kiro/steering/ui-copy.md)",
+      "trigger": "PostFileSave",
+      "matcher": "\\.(tsx|jsx)$|(^|/)(locales|i18n)/",
+      "action": {
+        "type": "agent",
+        "prompt": "UI copy may have changed. Check it against .kiro/steering/ui-copy.md. Flag evaluative words in Korean or English (such as 약속 파기, 거짓말, 실패, 꼼수, broken promise, lie, failure, trick) and propose record-state wording instead. Check that every verdict on screen shows its official link, clause location and original excerpt, and that translations are labeled. Change copy only, not logic."
+      },
+      "enabled": true
+    }
+  ]
+}

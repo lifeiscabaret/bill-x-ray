@@ -1,0 +1,21 @@
+# dependencies and build output
+node_modules/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+
+# logs
+*.log
+logs/
+
+# environment files (secrets never enter git)
+.env*
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# NOTE: /.kiro (specs, steering, hooks) must stay committed (Kiroween rule).
+# Never add a line to this file that ignores .kiro or any of its subfolders.

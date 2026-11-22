@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "publish-guard",
+      "description": "Keep internal research material and API keys out of the public repository",
+      "trigger": "PostFileSave",
+      "matcher": "(^|/)research/(raw|review|meta)/|_검수\\.md$|RUN_LOG_|RUN_PROMPT_|_다음작업\\.md$|00_설계_및_실행가이드\\.md$|(^|/)\\.env",
+      "action": {
+        "type": "agent",
+        "prompt": "This file looks like internal material that must not be in the public repository: raw deep-research reports, review packets, run logs, the research kit guide (it contains team member names), or a secrets file. Do not commit it. Tell the user which file it is and ask them to move it outside the repository. If it is a .env file, make sure it is listed in .gitignore and that no API key (for example a 국가법령정보센터 OC value or a Congress.gov api_key) appears in tracked files."
+      },
+      "enabled": true
+    }
+  ]
+}
