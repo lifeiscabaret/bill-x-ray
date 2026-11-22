@@ -113,7 +113,7 @@ that a researcher's own "opened" flag is never enough.
 2. THE Evidence_Gate SHALL fail Rows whose Ledger result is partial (`부분`) or cannot be
    checked (`확인 불가`), and Rows with no Ledger row, and SHALL state the reason.
 3. THE Evidence_Gate SHALL take "opened and checked" from the Ledger, not from the Row's own
-   `verified_opened` flag. (Proposal: recorded in `docs/DECISIONS.md` once approved.)
+   `verified_opened` flag (decision D-001).
 4. THE Evidence_Gate SHALL NOT count `excerpt_en` or any translation as evidence.
 5. THE Ingest SHALL judge each evidence Row and each path on its own; a case with one matched
    Row does not make its other paths confirmed.
@@ -127,9 +127,10 @@ repository holds nothing that failed a check.
 
 1. THE Loading_Gate SHALL load a Row into committed data only when its cited sources opened in
    the Ledger, its evidence passes the Evidence_Gate, the case `confidence` is `high` or
-   `medium`, and cross-review classified the Row as "load as is".
-2. WHILE no cross-review result exists for a Row, THE Loading_Gate SHALL exclude it with the
-   reason "cross-review pending".
+   `medium`, and cross-review classified the Row as "load as is" (or, for a Gold_Set case, a
+   confirmed Recheck stands in for cross-review; Requirement 9, decision D-002).
+2. WHILE neither a cross-review result nor a confirmed Recheck applies to a Row, THE
+   Loading_Gate SHALL exclude it with the reason "cross-review pending".
 3. THE Ingest SHALL list every excluded Row with its reason; nothing is dropped silently.
 4. WHEN the gate changes, THE team SHALL add a line with the reason to `docs/DECISIONS.md`.
 
@@ -191,16 +192,24 @@ and to recheck what the demo depends on, so that the samples rest on checked fac
    21337): the texts of the original §15 and §33 and of the Act's §18 and §33, the effective
    date, and the two discard dates in the research (2025-12-04 and 2026-01-29). Today 0 of
    its 5 evidence Rows match word for word.
-4. THE team SHALL recheck the two H.R. 748 items the demo needs that are not yet matched: the
-   short title in §1 of the 2020 enrolled text (no research Row exists) and P.L. 116-94
-   Div. N, Title I, §503 on a page that shows the law text (research Row B4R-EVI-0005 points
-   to a GovInfo details page without it).
-5. THE team SHALL store each Recheck in `data/verification/` with the URL, anchor, official
-   excerpt, result, date and the role that checked it; the other role SHALL confirm it, and
-   Rechecks SHALL enter the data through the Mapping_Module. (Proposal: a Recheck confirmed
-   by the other role counts as cross-reviewed for the Loading_Gate; recorded in
-   `docs/DECISIONS.md` once approved.)
-6. WHEN the Research_Dir is not available (for example for someone who clones the
+4. THE team SHALL recheck, against the handover's official links (BILLS-116hr748enr and
+   PLAW-116publ94), the two H.R. 748 items the demo needs that are not yet matched: the short
+   title in §1 of the 2020 enrolled text (no research Row exists) and P.L. 116-94 Div. N,
+   Title I, §503 on a page that shows the law text (research Row B4R-EVI-0005 points to a
+   GovInfo details page without it) (decision D-003).
+5. THE team SHALL store each Recheck in `data/verification/` with who rechecked it (role A or
+   B, no personal names), when, the URL opened, the anchor, the official excerpt, the result,
+   and who confirmed it and when. The person who confirms SHALL differ from the person who
+   rechecked, and both SHALL open the official URL themselves. Rechecks SHALL enter the data
+   through the Mapping_Module.
+6. WHERE a Row belongs to a Gold_Set case and has a Recheck confirmed as in criterion 5, THE
+   Loading_Gate SHALL treat that Recheck as the Row's cross-review result; every other Row
+   waits for the cross-review results (decision D-002).
+7. THE team SHALL have a person open the official source and check word for word every
+   evidence Row that a Gold_Set case relies on, even when the Ledger records a match, because
+   excerpts longer than 125 characters were matched on the verification tool's judgement
+   (decision D-001).
+8. WHEN the Research_Dir is not available (for example for someone who clones the
    repository), THE tests that need it SHALL be skipped with a message, and the tests on
    committed data SHALL still run.
 

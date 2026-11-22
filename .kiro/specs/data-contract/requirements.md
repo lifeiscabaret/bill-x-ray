@@ -132,6 +132,8 @@ it word for word, so that nothing on screen rests on a summary, a translation or
 4. THE Contract SHALL treat `null`, empty and `"unknown"` URLs as missing.
 5. IF an excerpt is longer than 300 characters for an official document or 200 characters
    for news, THEN THE Contract SHALL block it.
+6. THE Contract SHALL record, with every "matched on the official page" state, the URL that
+   was opened, the date of the check and who checked it (role A or B, not a personal name).
 
 ### Requirement 5: Dates and legislative events
 

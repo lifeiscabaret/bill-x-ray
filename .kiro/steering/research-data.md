@@ -20,7 +20,11 @@ path statuses.
 ## Evidence gate
 - A path is confirmed only when the official URL in the original language, the clause
   anchor and the original-language excerpt match one to one, and the evidence was opened
-  and checked (`verified_opened: true`).
+  and checked: the research verification ledger records the excerpt word for word on the
+  linked page (일치). The research row's own `verified_opened` value is not used (D-001).
+- Every evidence row a demo case relies on is opened and checked once more by a person on
+  the official source, because excerpts longer than 125 characters were matched on the
+  verification tool's judgement (D-001).
 - A translation is never evidence. Keep translations only as display text next to the
   original, labelled as a translation.
 - Clauses and links proposed by research, including AI-assisted research, are candidates
@@ -28,9 +32,13 @@ path statuses.
 
 ## Loading gate (first load)
 Load a row only if all three hold:
-1. Its cited sources and evidence have `verified_opened: true`.
+1. Its cited sources opened and its evidence matched, according to the verification
+   ledger (D-001).
 2. For cases, `confidence` is `high` or `medium`.
-3. Cross-review classified the row as "load as is".
+3. Cross-review classified the row as "load as is". For the 18 gold (demo) cases only, a
+   team recheck stands in for cross-review when the person who rechecks and the person who
+   confirms are different and both open the official URL; `data/verification/` records
+   who (role A or B), when, the URL and the result (D-002).
 
 Rows that fail stay out and are listed in the load report with the reason. Any change to
 this gate is recorded in `docs/DECISIONS.md`.
