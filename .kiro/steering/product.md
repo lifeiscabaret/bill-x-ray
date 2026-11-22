@@ -4,6 +4,10 @@ inclusion: always
 
 # Product: Bill X-Ray
 
+The handover and the mockup work order cited as "handover §n" and "work order §n" are
+internal documents kept outside this repository. What matters for building is summarized
+here and in `project-context.md`.
+
 ## One sentence
 A tool for legislative reporters and data editors that compares a bill with its later
 versions and follow-up documents, keeps the path of the bill number apart from the path

@@ -27,7 +27,7 @@ no link exists.
 - **Korea, Semiconductor Special Act: different number, content partly carried.** Original
   bill 2205453 was discarded when committee alternative 2215103 was adopted; the
   alternative passed the plenary on 2026-01-29. Act No. 21337 was promulgated on 2026-02-10
-  and takes effect on 2026-08-11. The original's power and water infrastructure content
+  and took effect on 2026-08-11. The original's power and water infrastructure content
   (§15) appears in modified form in the Act's §18. The original's working-hours exception
   for certain R&D staff (§33) is not in that final text. Never write "passed as proposed"
   or "permanently abolished".
