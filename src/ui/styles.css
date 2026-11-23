@@ -284,3 +284,93 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---- Scanner, scan view and not-drawn list (scan-screen 5) ---- */
+/* The panel sits beside the scan from 720 px; below it, under the scan (finished in task 9). */
+.scan-view {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 720px) {
+  .scan-view:has(> .panel) {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  }
+}
+.scan-view__main {
+  min-width: 0;
+}
+.scanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+.scanner__label {
+  font-weight: 700;
+}
+.scanner__range {
+  flex: 1 1 200px;
+  min-height: 44px;
+  accent-color: var(--ink);
+}
+.scanner__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.scanner__buttons button {
+  min-height: 44px;
+  padding: 4px 14px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.scan-view__comparison {
+  margin-bottom: 16px;
+}
+.not-drawn {
+  margin-top: 24px;
+}
+.not-drawn__heading {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+.not-drawn__intro {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+.not-drawn__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.not-drawn__item {
+  padding: 8px 0;
+  border-top: 1px solid var(--muted);
+}
+.not-drawn__open {
+  min-height: 44px;
+  padding: 4px 0;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.not-drawn__status {
+  margin: 0;
+  font-weight: 700;
+}
+.not-drawn__needs {
+  margin: 4px 0 0;
+  padding-left: 1.1em;
+}

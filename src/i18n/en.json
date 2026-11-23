@@ -4,7 +4,20 @@
     "tagline": "Follow the clause, not just the bill number."
   },
   "mode": {},
-  "scanner": {},
+  "scanner": {
+    "region": "Scan of the bill and its clauses",
+    "label": "Scan the bill",
+    "next": "Scan next version",
+    "back": "Back",
+    "showAll": "Show all",
+    "reset": "Reset",
+    "valueNone": "No version scanned yet",
+    "valueText": "{count} of {total} versions scanned: {versions}",
+    "notDrawn": "Not drawn",
+    "notDrawnIntro": "No line is drawn for these paths.",
+    "notDrawnItem": "{kind}: {from} to {to}",
+    "excluded": "Path {position} in the input: not drawn, the input could not be read"
+  },
   "kind": {
     "next_version": "Same number, next version",
     "successor_document": "Continued as {documentId}",
