@@ -26,3 +26,7 @@ stack and the folder layout.
   *Draft wording, to be confirmed before submission.*
 
 `/.kiro` (specs, steering and hooks) is part of the project and must stay committed.
+
+## How Kiro was used
+
+See [docs/KIRO_USAGE.md](docs/KIRO_USAGE.md) (draft).
