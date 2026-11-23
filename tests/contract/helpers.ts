@@ -14,7 +14,7 @@ export function minimalCase(): Case {
         title: "Example Act (introduced)", publisher: "Example Parliament", sourceKind: "official", language: "en",
       },
       {
-        documentId: "Bill 1", versionId: "v2", localEventLabel: "Passed", sourceUrl: null,
+        documentId: "Bill 1", versionId: "v2", localEventLabel: "Passed", sourceUrl: "https://example.org/bill-1-v2",
         title: "Example Act (passed)", publisher: "Example Parliament", sourceKind: "official", language: "en",
       },
     ],

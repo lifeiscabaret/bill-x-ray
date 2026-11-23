@@ -60,7 +60,7 @@ describe("parseCase stage 1", () => {
   it("accepts the optional promise and provenance, and their absence", () => {
     const input = minimalCase();
     expect(parseCase(input, options).issues).toEqual([]);
-    input.promise = { statement: "Invented statement.", sourceTitle: "t", publisher: "p", sourceUrl: null, date: "2020" };
+    input.promise = { statement: "Invented statement.", sourceTitle: "t", publisher: "p", sourceUrl: "https://example.org/promise", date: "2020" };
     input.provenance = ["row-1"];
     input.documents[0]!.provenance = ["row-2"];
     const { model, issues } = parseCase(input, options);
@@ -70,29 +70,32 @@ describe("parseCase stage 1", () => {
     expect(parseCase({ ...input, promise: null }, options).model?.case.promise).toBeNull();
   });
 
-  it.each(required)("removing $path gives one block issue at that path", ({ path, code }) => {
+  it.each(required)("removing $path gives one structure issue at that path", ({ path, code }) => {
     const input = without(minimalCase(), path);
     const { model, issues } = parseCase(input, options);
-    expect(issues).toHaveLength(1);
-    expect(issues[0]).toMatchObject({ path, code: code ?? "schema_required", severity: "block" });
-    expect(issues[0]!.message).toContain(formatPath(path));
+    // Stage 3 also reports the references that now point at the removed record (ref_unresolved).
+    const own = issues.filter((i) => i.code !== "ref_unresolved");
+    expect(own).toHaveLength(1);
+    expect(own[0]).toMatchObject({ path, code: code ?? "schema_required", severity: "block" });
+    expect(own[0]!.message).toContain(formatPath(path));
     expect(resolves(input, path)).toBe(true);
     if (path.length === 1) {
       expect(model).toBeNull();
+      expect(issues).toHaveLength(1);
     } else {
-      // the record is left out and listed
-      expect(model?.excluded).toEqual([{ path: path.slice(0, 2), reason: issues[0]!.code }]);
+      // the record is left out and listed first
+      expect(model?.excluded[0]).toEqual({ path: path.slice(0, 2), reason: own[0]!.code });
     }
   });
 
   it("a bad record does not hide the others", () => {
     const input = minimalCase();
     input.documents.push({ ...input.documents[0]!, versionId: "v3" });
-    (input.documents[1] as unknown as Record<string, unknown>).title = 5;
+    (input.documents[2] as unknown as Record<string, unknown>).title = 5;
     const { model, issues } = parseCase(input, options);
-    expect(issues).toMatchObject([{ path: ["documents", 1, "title"], code: "schema_type", params: { expected: "string", received: "number" } }]);
-    expect(model?.case.documents.map((d) => d.versionId)).toEqual(["v1", "v3"]);
-    expect(model?.excluded).toEqual([{ path: ["documents", 1], reason: "schema_type" }]);
+    expect(issues).toMatchObject([{ path: ["documents", 2, "title"], code: "schema_type", params: { expected: "string", received: "number" } }]);
+    expect(model?.case.documents.map((d) => d.versionId)).toEqual(["v1", "v2"]);
+    expect(model?.excluded).toEqual([{ path: ["documents", 2], reason: "schema_type" }]);
   });
 
   it("reports wrong enum values, wrong roles and a wrong contract version", () => {
