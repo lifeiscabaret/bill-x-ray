@@ -87,6 +87,8 @@ function dateLines(model: ScanModel, d: DocumentVersion): string[] {
   return events.map((e) => {
     const kind = t(`dateKind.${e.eventKind}`);
     if (e.eventDate === "unknown") return t("timing.date", { kind, date: t("timing.unknown") });
+    // The design times only effective and applied events; every other kind shows kind and date.
+    if (e.eventKind !== "effective" && e.eventKind !== "applied") return t("timing.date", { kind, date: e.eventDate });
     const timing = model.dates[e.eventId]?.timing ?? "unknown";
     return t("timing.dateWithTiming", { kind, date: e.eventDate, timing: t(`timing.${timing}`) });
   });
@@ -265,7 +267,7 @@ function PathDetails({ model, pathId, lookup }: { model: ScanModel; pathId: stri
           <h3>{t("panel.needs")}</h3>
           <ul>
             {view.needs.map((n, i) => {
-              const need = t(`panel.need.${n.code}`);
+              const need = t(`need.${n.code}`);
               const evidenceId = n.params?.evidenceId;
               return <li key={i}>{evidenceId ? t("panel.needWithRow", { need, evidenceId }) : need}</li>;
             })}

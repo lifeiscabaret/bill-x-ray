@@ -45,7 +45,10 @@ function dateLines(model: ScanModel, d: DocumentVersion): string[] {
     // The contract computes the timing from the reference date. A date it did not judge is
     // never shown as past or in effect: it reads "Not verified".
     const timing = model.dates[e.eventId]?.timing ?? "unknown";
-    const note = timing === "scheduled" || timing === "too_coarse" || (timing === "unknown" && dateKnown);
+    // The design times only effective and applied events. Every other kind shows its kind and
+    // date alone, whatever model.dates holds for it.
+    const timed = e.eventKind === "effective" || e.eventKind === "applied";
+    const note = timed && (timing === "scheduled" || timing === "too_coarse" || (timing === "unknown" && dateKnown));
     return note
       ? t("timing.dateWithTiming", { kind, date, timing: t(`timing.${timing}`) })
       : t("timing.date", { kind, date });

@@ -8,7 +8,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import type {
   DocumentVersion, EvidenceCheck, GateResult, LegislativeEvent, PathStatus, PathView, ScanModel,
 } from "../../src/contract/types";
-import { NEED_CODES } from "../../src/contract/types";
+import { EVENT_KINDS, NEED_CODES } from "../../src/contract/types";
+import en from "../../src/i18n/en.json";
 import { t } from "../../src/i18n/t";
 import { EvidencePanel } from "../../src/ui/EvidencePanel";
 import type { Selection } from "../../src/ui/NodeLayer";
@@ -110,19 +111,47 @@ describe("evidence panel: what it shows", () => {
     }
   });
 
-  it("gives every date its kind and timing; a future date reads Scheduled, an unknown one Not verified", async () => {
-    const events: LegislativeEvent[] = [
-      { eventId: "V1", documentId: "SYN-1", versionId: "enr", eventKind: "promulgated", eventDate: "2025-12-01", evidenceRefs: [] },
-      { eventId: "V2", documentId: "SYN-1", versionId: "enr", eventKind: "effective", eventDate: "2026-08-11", evidenceRefs: [] },
-      { eventId: "V3", documentId: "SYN-1", versionId: "enr", eventKind: "applied", eventDate: "unknown", evidenceRefs: [] },
-    ];
-    const model = withEvents(officialModel(), events, { V1: "past", V2: "scheduled", V3: "unknown" });
+  const ev = (eventId: string, eventKind: LegislativeEvent["eventKind"], eventDate: string): LegislativeEvent => ({
+    eventId, documentId: "SYN-1", versionId: "enr", eventKind, eventDate, evidenceRefs: [],
+  });
+
+  it("tags a timing only on effective and applied dates: future reads Scheduled, past reads Date has passed", async () => {
+    const events = [ev("V1", "effective", "2026-08-11"), ev("V2", "applied", "2025-12-01"), ev("V3", "effective", "2026-01-01")];
+    const model = withEvents(officialModel(), events, { V1: "scheduled", V2: "past", V3: "past" });
     const { panel } = await openPanel(model, versionSel("SYN-1", "enr"));
-    expect(within(panel).getByText("Promulgated: 2025-12-01 (Date has passed)")).toBeTruthy();
     expect(within(panel).getByText("Effective: 2026-08-11 (Scheduled)")).toBeTruthy();
+    expect(within(panel).getByText("Applied: 2025-12-01 (Date has passed)")).toBeTruthy();
+    // a same-day effective date comes out past and is never worded as in effect
+    expect(within(panel).getByText("Effective: 2026-01-01 (Date has passed)")).toBeTruthy();
+    expect(panel.textContent).not.toMatch(/in effect/i);
+  });
+
+  it("shows an effective date the contract did not judge as Not verified, and an unknown value too", async () => {
+    const events = [ev("V1", "effective", "2025-03-01"), ev("V2", "applied", "unknown")];
+    const model = withEvents(officialModel(), events, { V1: "unknown", V2: "unknown" });
+    const { panel } = await openPanel(model, versionSel("SYN-1", "enr"));
+    expect(within(panel).getByText("Effective: 2025-03-01 (Not verified)")).toBeTruthy();
     expect(within(panel).getByText("Applied: Not verified")).toBeTruthy();
   });
 
+  it("shows only kind and date for every other kind, whatever model.dates holds", async () => {
+    const kinds = EVENT_KINDS.filter((k) => k !== "effective" && k !== "applied" && k !== "unknown");
+    for (const timing of ["past", "scheduled", "too_coarse", "unknown"] as const) {
+      const events = kinds.map((k, i) => ev(`V${i}`, k, "2025-12-01"));
+      const model = withEvents(officialModel(), events, Object.fromEntries(events.map((e) => [e.eventId, timing])));
+      const { panel } = await openPanel(model, versionSel("SYN-1", "enr"));
+      const items = Array.from(panel.querySelectorAll(".panel__dates li")).map((li) => li.textContent);
+      expect(items).toHaveLength(kinds.length);
+      for (const text of items) expect(text).toMatch(/^[^:()]+: 2025-12-01$/);
+      cleanup();
+    }
+  });
+
+  it("shows an unknown date value of any other kind as Not verified", async () => {
+    const model = withEvents(officialModel(), [ev("V1", "passed", "unknown")], { V1: "unknown" });
+    const { panel } = await openPanel(model, versionSel("SYN-1", "enr"));
+    expect(within(panel).getByText("Passed: Not verified")).toBeTruthy();
+  });
   it("shows Not verified for a version with no date", async () => {
     const { panel } = await openPanel(officialModel(), versionSel("SYN-1", "enr"));
     expect(within(panel).getByText("Date: Not verified")).toBeTruthy();
@@ -304,8 +333,8 @@ describe("evidence panel: paths", () => {
     expect(statusRow.textContent).toContain("Not verified");
     expect(within(panel).queryByText(t("panel.confirmed"))).toBeNull();
     expect(within(panel).getByText(t("panel.needs"))).toBeTruthy();
-    expect(within(panel).getByText(t("panel.need.open_official_source"))).toBeTruthy();
-    expect(within(panel).getByText(`${t("panel.need.record_check")} (row E2)`)).toBeTruthy();
+    expect(within(panel).getByText(t("need.open_official_source"))).toBeTruthy();
+    expect(within(panel).getByText(`${t("need.record_check")} (row E2)`)).toBeTruthy();
   });
 
   it.each<[PathStatus, string]>([
@@ -324,8 +353,10 @@ describe("evidence panel: paths", () => {
     expect(within(panel).queryByText(t("panel.needs"))).toBeNull();
   });
 
-  it("has a string for every need code", () => {
-    for (const code of NEED_CODES) expect(t(`panel.need.${code}`).length).toBeGreaterThan(0);
+  it("has a string for every need code in the need group, and none left under panel", () => {
+    for (const code of NEED_CODES) expect(t(`need.${code}`).length).toBeGreaterThan(0);
+    expect(Object.keys(en.need).sort()).toEqual([...NEED_CODES].sort());
+    expect("need" in en.panel).toBe(false);
   });
 
   it("shows the clause location in the earlier and the later document", async () => {

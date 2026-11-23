@@ -252,6 +252,29 @@ describe("version nodes", () => {
     expect(nodeOf(mount(model).container, "version:D1#a").textContent).toContain("Effective: 2025-03-01 (Not verified)");
   });
 
+  it("shows a known date of any other kind with no timing tag, whatever model.dates says", () => {
+    const events = [event("e1", "passed", "2025-09-02"), event("e2", "promulgated", "2026-08-11"), event("e3", "published", "2026-02")];
+    for (const timing of ["past", "scheduled", "too_coarse", "unknown"] as const) {
+      const model = {
+        ...withDates(base(), events),
+        dates: Object.fromEntries(events.map((e) => [e.eventId, { timing, conflictWith: [] }])),
+      };
+      const dates = Array.from(nodeOf(mount(model).container, "version:D1#a").querySelectorAll(".node__date")).map((n) => n.textContent);
+      expect(dates).toEqual(["Passed: 2025-09-02", "Promulgated: 2026-08-11", "Published: 2026-02"]);
+      cleanup();
+    }
+  });
+
+  it("keeps Not verified on an effective date with a known value when the contract's timing is unknown", () => {
+    const model = {
+      ...withDates(base(), [event("e1", "effective", "2025-03-01"), event("e2", "applied", "2026-02")]),
+      dates: { e1: { timing: "unknown" as const, conflictWith: [] }, e2: { timing: "too_coarse" as const, conflictWith: [] } },
+    };
+    const text = nodeOf(mount(model).container, "version:D1#a").textContent!;
+    expect(text).toContain("Effective: 2025-03-01 (Not verified)");
+    expect(text).toContain("Applied: 2026-02 (Date incomplete)");
+  });
+
   it("reads an unknown date value and a version with no date as Not verified", () => {
     const unknown = withDates(base(), [event("e1", "effective", "unknown")]);
     expect(nodeOf(mount(unknown).container, "version:D1#a").textContent).toContain("Effective: Not verified");
