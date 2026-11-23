@@ -188,3 +188,58 @@ describe("property 7: normalization touches URLs only", () => {
     );
   }, 30_000);
 });
+
+describe("property 8: no new dates", () => {
+  // Event dates drawn from valid dates of every precision, `unknown`, near misses and free text.
+  const pad = (n: number, w: number) => String(n).padStart(w, "0");
+  const eventDate = fc.oneof(
+    fc.tuple(fc.integer({ min: 1900, max: 2100 }), fc.integer({ min: 1, max: 12 }), fc.integer({ min: 1, max: 31 }), fc.constantFrom("day", "month", "year"))
+      .map(([y, m, d, p]) => (p === "year" ? pad(y, 4) : p === "month" ? `${pad(y, 4)}-${pad(m, 2)}` : `${pad(y, 4)}-${pad(m, 2)}-${pad(d, 2)}`)),
+    fc.constant("unknown"), fc.constantFrom("2026-02-30", "2026-1-5", "six months after promulgation", "공포 후 6개월"), str,
+  );
+  const events = fc.array(fc.record({
+    eventId: id, documentId: id, versionId: id, eventKind: fc.constantFrom(...EVENT_KINDS), eventDate,
+    evidenceRefs: fc.array(id, { maxLength: 2 }),
+  }), { maxLength: 5 });
+  const reference = fc.oneof(fc.constant("2026-06-15"), eventDate);
+
+  it("every date in the model appears in the input, and every entry belongs to an event of the model", () => {
+    fc.assert(
+      fc.property(generatedCase, events, reference, (base, evs, referenceDate) => {
+        const input = { ...base, events: evs };
+        const { model } = parseCase(input, { ...options, referenceDate });
+        const inputDates = new Set(evs.map((e) => e.eventDate));
+        for (const e of model!.case.events) expect(inputDates.has(e.eventDate)).toBe(true);
+        expect(Object.keys(model!.dates).sort()).toEqual(model!.case.events.map((e) => e.eventId).sort());
+        // a kept event is an input event, field for field; the reference date is the one given
+        expect(model!.referenceDate).toBe(referenceDate);
+        for (const e of model!.case.events) expect(evs).toContainEqual(e);
+      }),
+      { numRuns: 200 },
+    );
+  }, 30_000);
+});
+
+describe("property 9: future dates are never past", () => {
+  const two = (n: number) => String(n).padStart(2, "0");
+  // A date of any precision, and the first day it can mean (an independent oracle).
+  const partial = fc.tuple(fc.integer({ min: 1990, max: 2060 }), fc.integer({ min: 1, max: 12 }), fc.integer({ min: 1, max: 28 }), fc.constantFrom("day", "month", "year"))
+    .map(([y, m, d, p]) => ({
+      text: p === "year" ? `${y}` : p === "month" ? `${y}-${two(m)}` : `${y}-${two(m)}-${two(d)}`,
+      earliest: p === "year" ? `${y}-01-01` : p === "month" ? `${y}-${two(m)}-01` : `${y}-${two(m)}-${two(d)}`,
+    }));
+  const referenceDay = fc.tuple(fc.integer({ min: 1990, max: 2060 }), fc.integer({ min: 1, max: 12 }), fc.integer({ min: 1, max: 28 }))
+    .map(([y, m, d]) => `${y}-${two(m)}-${two(d)}`);
+
+  it("an effective or applied event whose earliest possible day is after the reference date is scheduled", () => {
+    fc.assert(
+      fc.property(partial, referenceDay, fc.constantFrom("effective" as const, "applied" as const), (date, referenceDate, eventKind) => {
+        fc.pre(date.earliest > referenceDate);
+        const c: Case = { ...minimalCase(), events: [{ eventId: "e", documentId: "Bill 1", versionId: "v1", eventKind, eventDate: date.text, evidenceRefs: [] }] };
+        const { model } = parseCase(c, { ...options, referenceDate });
+        expect(model!.dates["e"]!.timing).toBe("scheduled");
+      }),
+      { numRuns: 200 },
+    );
+  }, 30_000);
+});
