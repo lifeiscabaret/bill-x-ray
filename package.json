@@ -13,7 +13,9 @@
     "test": "vitest run",
     "check:copy": "tsx scripts/check-copy.ts",
     "check:repo": "tsx scripts/check-repo.ts",
-    "check:dist": "tsx scripts/check-dist.ts"
+    "check:dist": "tsx scripts/check-dist.ts",
+    "validate:data": "tsx scripts/validate-data.ts",
+    "test:gate": "vitest run tests/contract tests/compare"
   },
   "dependencies": {
     "diff": "^9.0.0",

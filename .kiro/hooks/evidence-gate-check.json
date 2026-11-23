@@ -3,12 +3,12 @@
   "hooks": [
     {
       "name": "evidence-gate-check",
-      "description": "Re-check the evidence gate when data contract, path status or ingest code changes. Switch to a command action running the gate tests once they exist (data-contract and research-ingest tasks).",
+      "description": "Re-check the evidence gate when data contract, path status or ingest code changes. Runs `npm run --silent test:gate`: the contract and comparison tests (`vitest run tests/contract tests/compare`; the ingest tests join when the ingest exists, D-020). Exit 1 reports the failing test.",
       "trigger": "PostFileSave",
       "matcher": "(^|[\\\\/])src[\\\\/](contract|ingest)[\\\\/][^\\\\/]+\\.ts$",
       "action": {
-        "type": "agent",
-        "prompt": "Data contract, path status or ingest code changed. For every path that can be marked confirmed, confirm that each of its evidence rows has an official URL in the original language, a clause anchor and an original-language excerpt that match one to one, and that the evidence was opened and checked. A translation, a shared bill number or text similarity must never count as evidence. A path that fails keeps an unverified state (such as Not verified, Evidence missing or Omission not verified) and is never shown as confirmed. Run the gate tests if they exist and report failures with case and evidence ids."
+        "type": "command",
+        "command": "npm run --silent test:gate"
       },
       "enabled": true
     }

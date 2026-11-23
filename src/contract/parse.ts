@@ -1,14 +1,14 @@
 import type { z } from "zod";
 import { checkPathKinds, checkRecords, checkReferences } from "./checks";
-import { checkEventDates, deriveDates } from "./dates";
+import { checkEventDates, deriveDates, parsePartialDate } from "./dates";
 import { gateCase, resolveChecks } from "./gate";
 import {
-  caseShellSchema, documentVersionSchema, evidenceSchema, eventSchema, pathSchema, promiseSchema,
-  schemaIssues,
+  caseShellSchema, documentVersionSchema, evidenceSchema, eventSchema, formatPath, pathSchema, promiseSchema,
+  recheckSchema, schemaIssues,
 } from "./schema";
 import { deriveStatuses } from "./status";
-import type { Case, Issue, ParseOptions, ParseResult, ScanModel } from "./types";
-import { normalizeCaseUrls } from "./urls";
+import type { Case, Issue, ParseOptions, ParseResult, Recheck, ScanModel } from "./types";
+import { fixLookalikes, hasSessionToken, isHttpUrl, isMissingUrl, normalizeCaseUrls } from "./urls";
 
 const LISTS = ["documents", "evidence", "events", "paths"] as const;
 type ListName = (typeof LISTS)[number];
@@ -144,4 +144,95 @@ export function parseCase(input: unknown, options: ParseOptions): ParseResult {
     },
     issues,
   };
+}
+
+// ---- Recheck records (data/verification/<caseId>.json) ----
+
+export interface RecheckOptions {
+  /**
+   * Personal names that must not appear in a `note`. No pure rule can find a name, so the
+   * caller supplies a list it keeps outside the repository; without one the name check is
+   * not run. Compared without case and without spaces. A name is never echoed in an issue.
+   */
+  personalNames?: readonly string[];
+}
+
+export interface RecheckResult {
+  /** The records that have the right shape, with look-alike characters in their URLs fixed. */
+  rechecks: Recheck[];
+  issues: Issue[];
+}
+
+const RECHECK_EXCERPT_LIMIT = 300; // legal originals (research-data.md)
+const squash = (s: string) => s.toLowerCase().replace(/\s+/g, "");
+
+/**
+ * Parses the content of one verification file: a list of `Recheck`. Never throws for any JSON
+ * value. A record of the wrong shape is left out (schema issues, block). A record of the right
+ * shape is kept even with a block issue, so the cross-check can still say what else is missing;
+ * the caller fails on any block. Issue paths start with the position of the record in the list.
+ */
+export function parseRecheck(input: unknown, options: RecheckOptions = {}): RecheckResult {
+  if (!Array.isArray(input)) {
+    return {
+      rechecks: [],
+      issues: [{ path: [], code: "schema_type", severity: "block", params: { expected: "array", received: input === null ? "null" : typeof input }, message: "A verification file holds a list of recheck records." }],
+    };
+  }
+  const issues: Issue[] = [];
+  const rechecks: Recheck[] = [];
+  const names = (options.personalNames ?? []).map(squash).filter((n) => n !== "");
+  const seen = new Set<string>();
+
+  input.forEach((item, i) => {
+    const r = recheckSchema.safeParse(item);
+    if (!r.success) {
+      issues.push(...schemaIssues(r.error, item, [i]));
+      return;
+    }
+    const rec: Recheck = r.data;
+    const add = (path: JsonPath, code: Issue["code"], severity: Issue["severity"], message: string, params?: Record<string, string>) =>
+      issues.push({ path, code, severity, ...(params ? { params } : {}), message });
+
+    // URLs: the opened page of each role, in the two fields that hold one.
+    const url = (value: string, path: JsonPath): string => {
+      const where = formatPath(path);
+      if (isMissingUrl(value)) {
+        add(path, "url_missing", "warn", `No URL at ${where}.`);
+        return value;
+      }
+      const fixed = fixLookalikes(value);
+      if (fixed !== value) add(path, "url_lookalike_fixed", "warn", `Look-alike characters in the URL at ${where} were replaced.`, { from: value, to: fixed });
+      if (!isHttpUrl(fixed)) add(path, "url_invalid", "block", `The value at ${where} is not an absolute http(s) URL.`, { value: fixed });
+      else if (hasSessionToken(fixed)) add(path, "url_session_token", "warn", `The URL at ${where} carries a session token and may stop working.`);
+      return fixed;
+    };
+    const sourceUrl = url(rec.sourceUrl, [i, "sourceUrl"]);
+    const confirm = rec.confirm === null ? null : { ...rec.confirm, url: url(rec.confirm.url, [i, "confirm", "url"]) };
+
+    if ([...rec.excerpt].length > RECHECK_EXCERPT_LIMIT) {
+      add([i, "excerpt"], "excerpt_too_long", "block", `The excerpt at [${i}] is longer than ${RECHECK_EXCERPT_LIMIT} characters.`, { limit: String(RECHECK_EXCERPT_LIMIT) });
+    }
+
+    // Who and when: a real calendar day for each role.
+    const day = (value: string, path: JsonPath) => {
+      if (parsePartialDate(value)?.precision !== "day") {
+        add(path, "date_format", "block", `The date at ${formatPath(path)} must be a real YYYY-MM-DD day.`, { value });
+      }
+    };
+    day(rec.checkedAt, [i, "checkedAt"]);
+    if (confirm) day(confirm.at, [i, "confirm", "at"]);
+
+    if (seen.has(rec.recheckId)) add([i, "recheckId"], "duplicate_id", "block", `The id "${rec.recheckId}" is used more than once.`, { id: rec.recheckId });
+    seen.add(rec.recheckId);
+
+    if (rec.note && names.length > 0) {
+      const note = squash(rec.note);
+      if (names.some((n) => note.includes(n))) {
+        add([i, "note"], "schema_value", "block", `The note at [${i}] contains a name from the private list; notes carry roles only.`, { field: "note" });
+      }
+    }
+    rechecks.push({ ...rec, sourceUrl, confirm });
+  });
+  return { rechecks, issues };
 }

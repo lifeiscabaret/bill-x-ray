@@ -1,4 +1,5 @@
-import type { Case, DocumentVersion, EffectiveState, Evidence, Issue, Path } from "./types";
+import type { Case, DocumentVersion, EffectiveState, Evidence, Issue, Path, Recheck } from "./types";
+import { fixLookalikes, isMissingUrl } from "./urls";
 
 // Parse stage 3: semantic checks (design "Rules", "News excerpts", "Severities"). Every
 // function is pure and returns issues whose paths index the arrays of the Case it was given.
@@ -176,4 +177,76 @@ export function checkPathKinds(c: Case): Issue[] {
     const reason = endpointMismatch(c, p);
     return reason ? [block(["paths", i, "kind"], "kind_endpoint_mismatch", `The endpoints do not fit kind "${p.kind}": ${reason}.`, { kind: p.kind, reason })] : [];
   });
+}
+
+// ---- Loading cross-check (D-002, D-006, D-020) ----
+
+/** Why a recheck record does not satisfy the loading condition. Carried in `params.reason`. */
+export const RECHECK_REASONS = [
+  "no_record", // no recheck names this evidence row
+  "result_not_matched", // the first role's result is not "matched"
+  "confirm_missing", // no second part
+  "confirm_not_matched", // the second role's result is not "matched"
+  "same_role", // checkedBy and confirm.by are the same role
+  "url_mismatch", // the first role opened another URL than the row's sourceUrl
+  "confirm_url_mismatch", // the second role opened another URL than the row's sourceUrl
+  "absence_role_missing", // a not_included path lacks checkedBy or confirmedBy
+  "absence_same_role", // a not_included path has the same role twice
+] as const;
+
+/** A URL as the gate compares it: look-alikes fixed, `null` when missing. */
+const comparable = (value: string | null | undefined): string | null => (isMissingUrl(value) ? null : fixLookalikes(value!));
+
+/**
+ * The two-role loading condition, which is stricter than the screen gate (D-008). For every
+ * evidence row of a bundled case whose check state is `matched_official`, one recheck record
+ * (matched through `target.evidenceId`, in this case) must hold: result `matched`; a `confirm`
+ * part with result `matched`; two different roles; and both URLs equal to the version's
+ * `sourceUrl` once the look-alikes are fixed (never a raw string compare). The absence check of
+ * a `not_included` path needs `checkedBy` and `confirmedBy`, two different roles.
+ *
+ * A failing line is one `recheck_missing` block issue with `params.reason`; paths index the Case.
+ * Two records for one row are `duplicate_id`: nothing picks one of them silently. This function
+ * reads no clock and no file: the caller passes the records of the files it read.
+ */
+export function crossCheckRechecks(c: Case, rechecks: readonly Recheck[]): Issue[] {
+  const issues: Issue[] = [];
+  const fail = (path: JsonPath, reason: (typeof RECHECK_REASONS)[number], id: string, message: string): void => {
+    issues.push(block(path, "recheck_missing", message, { reason, id }));
+  };
+  const own = rechecks.filter((r) => r.caseId === c.caseId);
+
+  c.evidence.forEach((e, i) => {
+    if (e.check.state !== "matched_official") return;
+    const path: JsonPath = ["evidence", i];
+    const found = own.filter((r) => r.target.evidenceId === e.evidenceId);
+    if (found.length === 0) return fail(path, "no_record", e.evidenceId, `Evidence "${e.evidenceId}" is marked matched_official but has no recheck record.`);
+    if (found.length > 1) {
+      issues.push(block(path, "duplicate_id", `Evidence "${e.evidenceId}" has more than one recheck record.`, { id: e.evidenceId }));
+      return;
+    }
+    const r = found[0]!;
+    const source = comparable(findDocument(c, e.documentId, e.versionId)?.sourceUrl);
+    const say = (what: string) => `Recheck of evidence "${e.evidenceId}": ${what}.`;
+    if (r.result !== "matched") fail(path, "result_not_matched", e.evidenceId, say(`the result is "${r.result}", not "matched"`));
+    if (r.confirm === null) fail(path, "confirm_missing", e.evidenceId, say("the second role's part is missing"));
+    else {
+      if (r.confirm.result !== "matched") fail(path, "confirm_not_matched", e.evidenceId, say(`the second role's result is "${r.confirm.result}", not "matched"`));
+      if (r.confirm.by === r.checkedBy) fail(path, "same_role", e.evidenceId, say("both parts name the same role"));
+      if (source === null || comparable(r.confirm.url) !== source) fail(path, "confirm_url_mismatch", e.evidenceId, say("the second role did not open the row's source URL"));
+    }
+    if (source === null || comparable(r.sourceUrl) !== source) fail(path, "url_mismatch", e.evidenceId, say("the first role did not open the row's source URL"));
+  });
+
+  c.paths.forEach((p, i) => {
+    const a = p.kind === "not_included" ? p.absenceCheck : null;
+    if (!a) return;
+    const path: JsonPath = ["paths", i, "absenceCheck"];
+    if (a.checkedBy === null || a.confirmedBy === null) {
+      fail(path, "absence_role_missing", p.pathId, `The absence check of path "${p.pathId}" needs checkedBy and confirmedBy.`);
+    } else if (a.checkedBy === a.confirmedBy) {
+      fail(path, "absence_same_role", p.pathId, `The absence check of path "${p.pathId}" names the same role twice.`);
+    }
+  });
+  return issues;
 }
