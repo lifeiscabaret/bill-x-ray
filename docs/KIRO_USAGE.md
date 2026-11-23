@@ -80,10 +80,12 @@ How they are structured:
   applied D-016 and D-017 to two hooks, five steering files, five spec files, the README
   and the decision log in one commit, with the decision numbers in the text. D-008 replaced a rule in the
   first design draft, and the design was changed to match (`d0c9d28`).
-- **Where chat instructions were used without a spec:** the steering files, hooks and draft
-  requirements (`6ce6f06`, `d22ca5d`, `d942285`) were written in one Kiro Crew chat from the
-  product owner's instructions, so no spec existed to drive them. Repository housekeeping
-  was done the same way: the change of commit address to a GitHub noreply address, the merge
+- **Where chat instructions were used without a spec:** the first steering files and hooks
+  arrived as a delivered handoff set and were committed as received, apart from one title
+  line (`6ce6f06`); the repository does not show how that set was written. One Kiro Crew
+  chat then aligned it with the project's source documents and added the `product`, `tech`
+  and `structure` steering files from the product owner's instructions (`d22ca5d`).
+  Repository housekeeping was done the same way: the change of commit address to a GitHub noreply address, the merge
   with the public repository, the README edits, the `.gitignore` and the rebuild of the
   unpushed local commits on top of the public `main`. A pre-push scan followed each of
   these before the product owner pushed. None of this is application code.
@@ -142,8 +144,9 @@ the documentation as kiro-cli's v3 engine. Its setting on 2026-11-22 and 2026-11
 checked. There is no separate record of Kiro IDE or Kiro Web use.
 
 **Phase 1, 2026-11-22 to the morning of 2026-11-23.** One Kiro Crew chat did the work
-directly, with no conductor and no worker chats. That covers the content of `6ce6f06`,
-`d22ca5d`, `d942285`, `07c5d35` and `3259f93`, the change to a GitHub noreply address, the
+directly, with no conductor and no worker chats. That covers the repository start
+(`6ce6f06`: the license, README and git settings files, and the delivered handoff steering
+files and hooks committed as received), then `d22ca5d`, `d942285`, `07c5d35` and `3259f93`, the change to a GitHub noreply address, the
 first merge, the README edits (now in `f691a5a`) and the writing of both design drafts.
 
 **Phase 2, from the next request on 2026-11-23.**
