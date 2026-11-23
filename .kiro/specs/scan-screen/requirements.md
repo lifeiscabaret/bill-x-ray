@@ -34,8 +34,8 @@ split before I read anything.
 
 #### Acceptance Criteria
 
-1. WHEN the app opens, THE Scan_Screen SHALL show the US H.R. 748 Sample in English under the
-   heading "Same number. Different body." and the line "Follow the clause, not just the bill
+1. WHEN the app opens and the US H.R. 748 Sample is loaded, THE Scan_Screen SHALL show it in
+   English under the heading "Same number. Different body." and the line "Follow the clause, not just the bill
    number."
 2. WHEN the user moves the Scanner, THE Scan_Screen SHALL split the view into the
    Number_Path (one bill number, two versions) and the Clause_Path (the excise tax repeal

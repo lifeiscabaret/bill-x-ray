@@ -341,8 +341,9 @@ Rank: `confirmed` is above every other status; the other three are not ordered.
 
 `parseCase(input, { referenceDate, origin, bundledChecks })`.
 
-- `bundled`: files in `data/cases/`, written by the ingest from gated research rows and
-  rechecks. Check records are used as written.
+- `bundled`: files in `data/cases/`. Until the research ingest exists they are entered
+  directly from fully rechecked rows (D-020); the ingest may later write them from gated
+  research rows and rechecks. Check records are used as written.
 - `user`: the form and imported JSON. The browser cannot open official pages, so a user's
   own check record is ignored (`check_record_ignored`). The one exception: an evidence row
   copied from a sample keeps that sample's check record while its `documentId`,
@@ -430,7 +431,7 @@ Property-based tests use fast-check with generated cases of bounded size (up to 
 | Hook | New action |
 |---|---|
 | `research-data-check` | `npm run --silent validate:data` |
-| `evidence-gate-check` | `npm run --silent test:gate` (`vitest run tests/contract tests/ingest`) |
+| `evidence-gate-check` | `npm run --silent test:gate` (`vitest run tests/contract tests/compare`; `tests/ingest` joins when the ingest exists, D-020) |
 | `publish-guard` | `npm run --silent check:repo` |
 
 ## Decisions in this design

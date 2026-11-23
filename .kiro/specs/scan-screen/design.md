@@ -36,7 +36,7 @@ flowchart TB
 |---|---|
 | `src/main.tsx` | Mounts `<App>`; sets `data-motion` from `prefers-reduced-motion`. |
 | `src/ui/App.tsx` | Mode switcher, reference date (today's local date), motion toggle. |
-| `src/ui/samples.ts` | Loads and parses `data/cases/*.json`. A sample with block issues shows its issue list instead of a scan. |
+| `src/ui/samples.ts` | Loads and parses `data/cases/*.json`. A sample with block issues shows its issue list instead of a scan. A sample mode button exists only for a sample that loaded; with none, the app opens on "Scan your own bill" and keeps the heading and tagline (D-020). |
 | `src/ui/ScanView.tsx` | Scanner, layers, not-drawn list, comparison strip. |
 | `src/ui/layout.ts` | `layoutScan(model, { orientation, scanned })`: pure, no DOM. |
 | `src/ui/ConnectorLayer.tsx` | SVG lines only; hidden from assistive technology. |
@@ -221,7 +221,7 @@ product owner chooses a replacement.
 
 ## Error handling
 
-- A sample with block issues shows "This sample failed its checks" and its issue list, not a
+- A sample with block issues shows "This sample did not pass its checks" and its issue list, not a
   partial scan.
 - An exception thrown while rendering is caught by one error boundary around `ScanView`; it
   shows "Something went wrong reading this case" and keeps the mode switcher working.
@@ -275,5 +275,5 @@ Approved by the product owner on 2026-11-23; recorded in `docs/DECISIONS.md`.
 2. (D-014) Below 720 px the scan turns vertical with the same nodes and lines.
 3. (D-009) User cases show a banner and keep links "Not verified" (from the data-contract
    design).
-4. (D-015) The Korea mode button is hidden if D-006 removes the Korean sample, until the
-   product owner picks a replacement.
+4. (D-015) The Korea mode button is hidden if D-006 removes the Korean sample, or while
+   `data/cases/` holds no Korean sample (D-020), until the product owner picks a replacement.
