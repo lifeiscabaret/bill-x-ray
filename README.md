@@ -12,7 +12,7 @@ Submitted by Seoul Economic Daily (Organization)
 
 ## Status
 
-Pre-mockup (2026-11-22). Nothing is built, deployed or published yet. The specs are in
+Pre-mockup (2026-11-22). Nothing is built or deployed yet. The specs are in
 `.kiro/specs/`, and the steering files in `.kiro/steering/` describe the product, the
 stack and the folder layout.
 
@@ -22,8 +22,6 @@ stack and the folder layout.
 - **Legal texts and news excerpts:** bill and statute texts and news article excerpts
   that appear in this repository are not covered by the MIT License. Any rights in them
   remain with their original authors and publishers, under each source's own terms.
-
-*The second item is draft wording and will be confirmed before this repository is made
-public.*
+  *Draft wording, to be confirmed before submission.*
 
 `/.kiro` (specs, steering and hooks) is part of the project and must stay committed.
