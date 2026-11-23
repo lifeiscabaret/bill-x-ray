@@ -35,8 +35,15 @@ Proposed on 2026-11-22 for the mockup build. Change the stack here, not ad hoc i
 - `npm run validate:data`: checks `data/cases/` and `data/verification/` against the contract (hook target)
 - `npm run check:copy`: wording check for `src/ui/` and `src/i18n/` (hook target)
 - `npm run check:repo`: internal material, `.env*` files and `.gitignore` lines that would hide `.kiro` (hook target)
-- `npm run ingest -- --research <dir>`: research ingest; writes `data/cases/`, `docs/load-report.md` and `docs/DECISIONS.md`
+- `npm run check:dist`: checks `dist/` before an upload; fails on any excerpt from another outlet's news (D-016), a secret, an internal material name, an analytics beacon such as `beacon.min.js` or `cloudflareinsights`, or a script or font from a CDN
+- `npm run ingest -- --research <dir>`: research ingest; writes `data/cases/`, `docs/load-report.md` and `docs/DECISIONS.md`. Deferred until the app runs (D-020); demo cases go into `data/` directly
 - `npm run build`: static build into `dist/`
+
+## Deployment (D-018)
+Only `dist/` goes online, uploaded by a person to the company's Cloudflare account at its
+default address, with no domain bought. Agents never sign up or deploy. After each
+deployment, check that the live HTML has no `beacon.min.js` or `cloudflareinsights`; if it
+does, turn Web Analytics off. The site stays up until 2027-02-04 KST.
 
 ## Hooks
 Hooks start as agent prompts. When the script a hook needs exists, switch that hook to a

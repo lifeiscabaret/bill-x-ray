@@ -82,7 +82,8 @@ How they are structured:
   first design draft, and the design was changed to match (`d0c9d28`).
 - **Where chat instructions were used without a spec:** the first steering files and hooks
   arrived as a delivered handoff set and were committed as received, apart from one title
-  line (`6ce6f06`); the repository does not show how that set was written. One Kiro Crew
+  line (`6ce6f06`); the repository does not show how that set was written, and the README
+  states, on the product owner's word, that it was prepared outside Kiro on 2026-11-22. One Kiro Crew
   chat then aligned it with the project's source documents and added the `product`, `tech`
   and `structure` steering files from the product owner's instructions (`d22ca5d`).
   Repository housekeeping was done the same way: the change of commit address to a GitHub noreply address, the merge

@@ -16,6 +16,17 @@ Pre-mockup (2026-11-22). Nothing is built or deployed yet. The specs are in
 `.kiro/specs/`, and the steering files in `.kiro/steering/` describe the product, the
 stack and the folder layout.
 
+## Pre-existing work
+
+The optional promise field follows the structure of an existing Seoul Economic Daily
+promise-tracking service (yaksok.sedaily.ai) that predates the hackathon.
+
+Two planning notes (a handover note and a mockup work order) were written on 2026-11-19 to
+2026-11-20 and are kept outside this repository; the steering files summarize them. The
+first eight .kiro files were prepared outside Kiro on 2026-11-22 and committed as received,
+apart from one title; later changes to them were made in Kiro. How Kiro was used is
+described in [docs/KIRO_USAGE.md](docs/KIRO_USAGE.md) (draft).
+
 ## License
 
 - **Code:** MIT. See [LICENSE](LICENSE).

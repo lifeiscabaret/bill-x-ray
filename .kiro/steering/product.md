@@ -41,9 +41,9 @@ and splice motion.
 
 Out of scope: worldwide automatic collection, automatic URL interpretation, crawlers,
 PDF/OCR, a runtime LLM or AI adapter, login, integration with live sites, a separate design
-system, a legal model, automatic loading of 100 Korean cases, deployment, outbound
-messages, payments and license changes. Development is local only. Never promise that a
-URL alone lets the tool trace a bill in any country.
+system, a legal model, automatic loading of 100 Korean cases, deployment by an agent,
+outbound messages, payments and license changes. Development and agent work are local only.
+Never promise that a URL alone lets the tool trace a bill in any country.
 
 ## Team (work order §2)
 Two people, separate from the ATLAS Lineage team (no shared project or folders).
@@ -84,8 +84,14 @@ the UI is distinctive and functional enough. Two countries in one app is not Ske
   the company's representative (`docs/DECISIONS.md` D-007).
 - Code license: MIT, copyright holder Seoul Economic Daily (D-005).
 - The Korean sample stays in the demo only if its evidence is confirmed under D-006.
+- Deployment (D-018): only `dist/`, uploaded directly to the company's Cloudflare account at
+  its default address, with no domain, kept until the award announcement (2027-02-04 KST).
+  A person signs up and deploys after the internal sign-off. Agents never sign up or
+  deploy.
+- Order of work (D-020): the `tasks.md` files of data-contract and scan-screen first, then
+  implementation. research-ingest waits until the app runs.
 
 ## Decisions not yet made
 The data license, rights to the Seoul Economic Daily newsroom legislative tracking project
-(brand, data/API, full-article redistribution; short excerpts are allowed under D-016),
-deployment and the act of submitting. Nothing in this repository authorizes them.
+(brand, data/API, full-article redistribution; short excerpts are allowed under D-016) and
+the act of submitting. Nothing in this repository authorizes them.

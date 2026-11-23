@@ -14,6 +14,11 @@ path statuses.
   §4: Case, DocumentVersion, Evidence, LegislativeEvent and Path; see
   `.kiro/specs/data-contract/`) through one mapping module in `src/ingest/`. Never
   hand-edit loaded data.
+- P0 exception (D-020): the research-ingest is deferred until the app runs, so there is no
+  `src/ingest/` yet. The demo cases' rows are entered directly into `data/` in data
+  contract format, and only rows whose recheck is recorded in `data/verification/` (D-001,
+  D-002, D-006). Once entered, a row is not edited freely: changing a rechecked row's URL,
+  clause anchor or excerpt needs a new recheck, recorded the same way.
 - Raw research reports, review packets and the research verification ledgers stay outside
   this repository. Only rows that pass the loading gate are committed.
 
@@ -88,4 +93,4 @@ record per judged row, kept in the private research folder, never in this reposi
 
 ## Records
 - Each gate or load decision is one line in `docs/DECISIONS.md`. Each ingest run lists its
-  sources, exclusions and reasons in `docs/load-report.md`.
+  sources, exclusions and reasons in `docs/load-report.md` (ingest runs are deferred, D-020).

@@ -12,17 +12,17 @@ inclusion: always
 src/
   contract/          data contract (work order §4): types, schema, validation, path status rules
   compare/           text comparison between versions
-  ingest/            research rows to contract: normalize, gate, map, report (pure functions)
+  ingest/            research rows to contract: normalize, gate, map, report (pure functions); deferred until the app runs (D-020)
   ui/                React components: scan screen, scanner, evidence panel, "Scan your own bill"
   i18n/              en.json (default), ko.json (P1)
-scripts/             command-line tools with file access: ingest, validate-data, check-copy, check-repo
+scripts/             command-line tools with file access: validate-data, check-copy, check-repo, check-dist (ingest is deferred, D-020)
 data/
-  cases/             one contract JSON file per case; gated or checked data only
+  cases/             one contract JSON file per case; for P0 entered directly in contract format, only rows with a recorded recheck (D-002, D-006, D-020)
   verification/      the team's own re-checks of evidence against official pages (official excerpts only)
 tests/               unit and property tests by area; fixtures/ holds synthetic regression cases
 docs/
   DECISIONS.md       one line per gate or load decision
-  load-report.md     written by the ingest
+  load-report.md     written by the ingest (deferred, D-020)
   mockup/            static mockup images
 ```
 
