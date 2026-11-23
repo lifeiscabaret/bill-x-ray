@@ -27,6 +27,10 @@ Proposed on 2026-11-22 for the mockup build. Change the stack here, not ad hoc i
   be outside this repository.
 - Never commit secrets, `.env*` files or sample keys that look real.
 - Do not add a dependency for something a 30-line function does.
+- `check:copy` parses TSX with the TypeScript 5 compiler API through the dev-only alias
+  `typescript5`, because TypeScript 7 ships no JavaScript API. The build and type check stay
+  on TypeScript 7, and the build calls TypeScript 7's compiler by path, because the
+  `typescript5` alias also installs a `tsc` command.
 - Node 22 LTS.
 
 ## Commands (planned; each exists once its task lands)

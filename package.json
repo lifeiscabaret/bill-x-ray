@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 4748 --strictPort",
-    "build": "tsc --noEmit && vite build",
-    "test": "vitest run"
+    "build": "node node_modules/typescript/bin/tsc --noEmit && vite build",
+    "test": "vitest run",
+    "check:copy": "tsx scripts/check-copy.ts"
   },
   "dependencies": {
     "diff": "^9.0.0",
@@ -29,6 +30,7 @@
     "jsdom": "^29.1.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
+    "typescript5": "npm:typescript@^5.9.3",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
   }
