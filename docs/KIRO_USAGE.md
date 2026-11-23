@@ -1,7 +1,8 @@
 # How Kiro was used (draft)
 
-*Draft, 2026-11-24. It describes the repository at commit 7605eb8 and rests only on the
-files and history in this repository. It is updated as the build starts.*
+*Draft, 2026-11-24. It describes the repository at commit aa3ea91. It rests on the files
+and history in this repository and, for the Kiro Crew section, on the Kiro Crew work ledger
+and chat history kept outside it. It is updated as the build starts.*
 
 The Kiroween 2026 [official rules](https://kiroween.devpost.com/rules) ask for a write-up
 of how Kiro was used and list the topics below. Each section answers one topic. A topic
@@ -13,19 +14,19 @@ was not done.
 - No application code exists yet. There is no `src/`, no `tests/`, no `package.json` and no
   running app. The repository holds the product rules, three specs, four hooks, a decision
   log and a README.
-- Because no code exists, **no code in this repository was written by chat-driven
-  ("vibe") coding, and none was generated from a spec yet.** The comparison below is about
-  how the rules and specs themselves were produced.
-- The repository does not record which Kiro app (IDE, CLI, Web or Kiro Crew) wrote each
-  file. Only the Kiro Crew work is recorded, in the work ledger described below.
+- Because no code exists, **no application code in this repository was written by
+  chat-driven ("vibe") coding, and none was generated from a spec yet.** The comparison
+  below is about how the rules, specs and repository housekeeping were produced.
+- The repository itself does not record which Kiro app wrote each file. The Kiro Crew chats
+  that did the work are recorded in the work ledger and chat history described below.
 
 ## Summary
 
 | Topic the rules ask about | Status in this repository |
 |---|---|
-| Kiro IDE, CLI, Web, Crew | Kiro Crew: used (see "Kiro Crew"). IDE, CLI, Web: no record, not used yet |
+| Kiro IDE, CLI, Web, Crew | Kiro Crew: used, and its chats are driven through Kiro CLI (see "Kiro Crew"). No separate record of Kiro IDE or Web use |
 | Custom agents | Not used yet. No agent definition is in the repository |
-| Agent hooks | Four hooks defined, not run yet |
+| Agent hooks | Four hooks defined, no run recorded |
 | Spec-driven development | Three specs. All have requirements, two have a design, none has tasks yet |
 | Steering docs | Seven steering files in use as written rules; two of them wait for source files |
 | MCP | Not used yet. No MCP configuration is in the repository |
@@ -64,7 +65,8 @@ How they are structured:
 | `d942285` | 2026-11-22 | Draft requirements for the three specs |
 | `07c5d35` | 2026-11-23 | Decisions D-001 to D-004 applied to steering and requirements |
 | `3259f93` | 2026-11-23 | Decisions D-005 to D-007 applied to steering and requirements |
-| `a1d30f0` | 2026-11-23 | Merge with the public repository's first commit |
+| `a1d30f0` | 2026-11-23 | Merge with the public repository's first two commits (the initial commit and its LICENSE update) |
+| `f691a5a` | 2026-11-23 | README status and draft mark before the first push |
 | `4cd1887` | 2026-11-23 | `.gitignore` for internal material |
 | `2deea6d` | 2026-11-23 | Draft designs for `data-contract` and `scan-screen` |
 | `d0c9d28` | 2026-11-23 | Decisions D-008 to D-015 applied to the designs |
@@ -78,10 +80,13 @@ How they are structured:
   applied D-016 and D-017 to two hooks, five steering files, five spec files, the README
   and the decision log in one commit, with the decision numbers in the text. D-008 replaced a rule in the
   first design draft, and the design was changed to match (`d0c9d28`).
-- **Where work happened without a spec:** the steering files and hooks were first committed
-  as a handoff set (`6ce6f06`, `d22ca5d`), before any spec existed. The repository does not
-  show how they were written, and chat is not kept in it, so this draft does not call them
-  chat-driven.
+- **Where chat instructions were used without a spec:** the steering files, hooks and draft
+  requirements (`6ce6f06`, `d22ca5d`, `d942285`) were written in one Kiro Crew chat from the
+  product owner's instructions, so no spec existed to drive them. Repository housekeeping
+  was done the same way: the change of commit address to a GitHub noreply address, the merge
+  with the public repository, the README edits, the `.gitignore` and the rebuild of the
+  unpushed local commits on top of the public `main`. A pre-push scan followed each of
+  these before the product owner pushed. None of this is application code.
 - **What the repository cannot show:** how long either way took, or how many defects
   either way caused. No code exists to measure, so no claim is made that spec-driven work
   was faster or safer here. That comparison waits for the first code.
@@ -100,17 +105,19 @@ Seven files in [`.kiro/steering/`](../.kiro/steering/):
 | `legal-sources.md` | when matching files open | Which sources count as official originals |
 | `ui-copy.md` | when matching files open | Record-state wording and what each screen element must show |
 
-The two "when matching files open" files are set to apply to files under `src/`, `scripts/`
-or `data/` (`legal-sources.md`) and under `src/ui/` or `src/i18n/` (`ui-copy.md`). No such
-files exist yet, so they have not applied. The strategy behind the files: put each rule in
+The two "when matching files open" files are set to apply to files under `src/contract/`,
+`src/ingest/`, `scripts/` or `data/` (`legal-sources.md`) and under `src/ui/` or
+`src/i18n/` (`ui-copy.md`). No such files exist yet, so they have not applied. The strategy behind the files: put each rule in
 one place, and let specs, hooks and later code point to it. Commit `7605eb8` shows it: one
 excerpt rule was changed in the steering file and then carried through specs and hooks.
 
 ## Agent hooks
 
 Four hooks in [`.kiro/hooks/`](../.kiro/hooks/). All four run an agent prompt when a
-matching file is saved. **All four are defined and have not run yet**: the files they
-watch (`src/`, `data/`) do not exist, and the repository holds no record of a run.
+matching file is saved. **All four are defined, and no run is recorded.** Three of them
+watch files (`src/`, `data/`) that do not exist yet. `publish-guard` also matches paths in
+the folders where internal material is kept, which worker chats wrote to. The repository
+keeps no run log, so a run cannot be ruled out, and this draft does not say they never ran.
 
 | Hook | Watches | Defined to |
 |---|---|---|
@@ -125,8 +132,21 @@ exists, so that it stops using agent credits. None of those scripts exists yet.
 ## Kiro Crew
 
 This section records what this project did with Kiro Crew, taken from the Kiro Crew work
-ledger. The ledger is outside this repository, so only the commits can be checked here.
+ledger and chat history. Both are outside this repository, so only the commits can be
+checked here.
 
+**Kiro CLI.** Kiro Crew's documentation says Crew starts `kiro-cli` in ACP mode and drives
+it, so the Kiro Crew chats ran through Kiro CLI. `kiro-cli` 3.1.0 is installed on the
+machine used. The harness set in this Kiro Crew's configuration today is KAS, described in
+the documentation as kiro-cli's v3 engine. Its setting on 2026-11-22 and 2026-11-23 was not
+checked. There is no separate record of Kiro IDE or Kiro Web use.
+
+**Phase 1, 2026-11-22 to the morning of 2026-11-23.** One Kiro Crew chat did the work
+directly, with no conductor and no worker chats. That covers the content of `6ce6f06`,
+`d22ca5d`, `d942285`, `07c5d35` and `3259f93`, the change to a GitHub noreply address, the
+first merge, the README edits (now in `f691a5a`) and the writing of both design drafts.
+
+**Phase 2, from the next request on 2026-11-23.**
 - A conductor chat split each request into tasks and sent each task to its own worker chat.
 - Worker chats reported to a work ledger.
 - Before the product owner was asked to approve, the conductor re-ran read-only checks:
@@ -137,12 +157,12 @@ Worker-chat rounds that match the history:
 
 | Round | Matching commits and decisions |
 |---|---|
-| Merge with the public repository's first commit, local commits under a GitHub noreply address | `a1d30f0`, D-005 |
-| `.gitignore` for internal material, before the first push | `4cd1887` |
-| Two design drafts | `2deea6d` |
+| Rebuild of the unpushed local commits on top of the updated public `main` | `6ce6f06` to `f691a5a`, including the merge `a1d30f0`; D-005 |
+| `.gitignore` and the checks before the first push | `4cd1887` |
+| A worker chat checked and committed the two design drafts, which the single chat had written earlier | `2deea6d` |
 | Design decisions D-008 to D-015 | `d0c9d28` |
 | News excerpt rule and review verdict format | `7605eb8`, D-016, D-017 |
-| This draft | the commit that adds this file |
+| This draft and its correction | the commits that add and correct this file |
 
 The pre-push scan is a script kept outside the repository. It checks the working folder and
 the history of `main` for secrets, database connection strings, personal data, internal
@@ -156,7 +176,6 @@ paths and internal file names.
 - **Property-based testing:** the data-contract and scan-screen designs and the
   research-ingest requirements list properties, and `tech.md` names fast-check. No test
   exists, so no issue has been caught by it.
-- **Kiro IDE, CLI and Web:** no record in the repository.
 
 ## To update once code exists
 
