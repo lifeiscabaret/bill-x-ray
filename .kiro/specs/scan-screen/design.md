@@ -265,8 +265,12 @@ Property tests (fast-check) on `layoutScan` and component tests (Testing Library
 
 ## Decisions in this design
 
-1. The scanner metaphor: lines start on top of each other and separate as the scanner
-   passes; the number line stays straight.
-2. Below 720 px the scan turns vertical with the same nodes and lines.
-3. User cases show a banner and keep links "Not verified" (from the data-contract design).
-4. The Korea mode button disappears if D-006 removes the Korean sample.
+Approved by the product owner on 2026-11-23; recorded in `docs/DECISIONS.md`.
+
+1. (D-013) The scanner metaphor: lines start on top of each other and separate as the
+   scanner passes; the number line stays straight.
+2. (D-014) Below 720 px the scan turns vertical with the same nodes and lines.
+3. (D-009) User cases show a banner and keep links "Not verified" (from the data-contract
+   design).
+4. (D-015) The Korea mode button is hidden if D-006 removes the Korean sample, until the
+   product owner picks a replacement.

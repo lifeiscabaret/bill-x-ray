@@ -16,8 +16,10 @@ Four design rules carry the requirements:
 2. **The gate looks only at check records.** Text similarity, shared numbers and text
    differences never reach the status code (Requirements 2.3, 2.4, 7.5). `status.ts` does
    not import `src/compare/`, and a test enforces that.
-3. **Every check names two different roles.** An evidence row passes only when role A and
-   role B both opened the official URL and found the excerpt word for word (D-001, D-002).
+3. **Every check names one role.** An evidence row passes only when one role, A or B,
+   opened the official URL and found the excerpt word for word (D-001, D-008). A second
+   check is not required on the screen. Loading demo cases keeps its own two-role
+   condition (D-002, D-006).
 4. **Problems are data.** Parsing never throws on bad input. It returns issues with a JSON
    path, a code, a severity and parameters; the UI turns codes into words from
    `src/i18n/` (Requirement 1.5).
@@ -116,12 +118,12 @@ export interface Evidence {
 
 export interface EvidenceCheck {         // Req 4.2, 4.6
   state: "matched_official" | "partial" | "could_not_open" | "not_checked" | "mismatch";
-  url: string | null;                    // the URL opened by the first checker
-  checkedBy: Role | null;
+  url: string | null;                    // the URL the checker opened
+  checkedBy: Role | null;                // the one role the gate needs (D-008)
   checkedAt: PartialDate | null;         // YYYY-MM-DD when set
-  confirmedBy: Role | null;              // the second person (D-002)
-  confirmedAt: PartialDate | null;
-  confirmedUrl: string | null;           // the URL the second person opened
+  confirmedBy: Role | null;              // optional: the second role of a D-002/D-006 recheck; the gate does not require it
+  confirmedAt: PartialDate | null;       // optional
+  confirmedUrl: string | null;           // optional: the URL the second role opened; when set it must equal sourceUrl
 }
 
 export interface LegislativeEvent {
@@ -167,8 +169,8 @@ export interface AbsenceCheck {
   versionId: string;
   scope: "whole_text" | { articles: string[] };
   searchedFor: string[];                 // terms or anchors looked for
-  checkedBy: Role | null; checkedAt: PartialDate | null;
-  confirmedBy: Role | null; confirmedAt: PartialDate | null;
+  checkedBy: Role | null; checkedAt: PartialDate | null;       // one role is enough (D-008)
+  confirmedBy: Role | null; confirmedAt: PartialDate | null;   // optional second role (D-002/D-006); not required
 }
 ```
 
@@ -228,7 +230,7 @@ export interface Recheck {
   excerpt: string;                       // copied exactly, ≤ 300 characters
   result: "matched" | "partial" | "mismatch" | "could_not_open" | "not_found";
   checkedBy: Role; checkedAt: string;
-  confirm: { by: Role; at: string; url: string; result: Recheck["result"] } | null;
+  confirm: { by: Role; at: string; url: string; result: Recheck["result"] } | null;  // second role; D-002/D-006 loading needs it, the screen gate does not (D-008)
   note?: string | null;                  // record-state wording; no personal names
 }
 ```
@@ -260,8 +262,8 @@ An evidence row passes only when every line holds; each failing line adds its re
 | `anchor` is not empty | `anchor_missing` |
 | `excerpt` is not empty and within its limit | `excerpt_missing` / `excerpt_too_long` |
 | `check.state` is `matched_official` | `not_checked`, `partial`, `could_not_open`, `mismatch`, `pasted_text_only` |
-| `check.url` and `check.confirmedUrl` equal `sourceUrl` after normalization | `checked_other_url` |
-| `checkedBy`, `checkedAt`, `confirmedBy`, `confirmedAt` are set and the two roles differ | `second_check_missing` / `same_person_checked` |
+| `check.url` equals `sourceUrl` after normalization; when `check.confirmedUrl` is set it must equal `sourceUrl` too | `checked_other_url` |
+| `checkedBy` and `checkedAt` are set (one role is enough; `confirmedBy` and `confirmedAt` are optional) | `checker_missing` |
 | If `pastedText` exists, the excerpt occurs in it word for word | `excerpt_not_in_pasted_text` |
 
 The translation is never read by the gate (Req 4.3). For a user case (see "Origin" below)
@@ -277,13 +279,14 @@ Rank: `confirmed` is above every other status; the other three are not ordered.
 3. For a clause-track path, evidence whose excerpt equals its version's `title` or
    `documentId` is set aside with `number_or_title_as_evidence` (Req 2.3).
 4. `not_included` → `confirmed` only if `absenceCheck` names the `to` version, records a
-   scope and two different roles, at least one evidence row from that version passes, and
-   every evidence row passes. Otherwise `omission_not_verified` with the missing items.
+   scope and one role (`checkedBy`, `checkedAt`; a second role is not required, D-008), at
+   least one evidence row from that version passes, and every evidence row passes.
+   Otherwise `omission_not_verified` with the missing items.
 5. `same_outcome_separate_law` → `confirmed` only if every evidence row passes and passing
    rows come from both the `from` document and the separate law. Otherwise `not_verified`
    with need `evidence_from_both_documents` (Req 3.6).
 6. Every other kind → `confirmed` if every evidence row passes, else `not_verified` with one
-   need per failing row (`open_official_source`, `second_check`, `resolve_mismatch`, …).
+   need per failing row (`open_official_source`, `record_check`, `resolve_mismatch`, …).
 7. If `reviewState` is `confirmed` and the derived status is not, add a
    `review_state_overclaim` warning and keep the derived status (Req 3.8).
 
@@ -416,12 +419,16 @@ Property-based tests use fast-check with generated cases of bounded size (up to 
 
 ## Decisions in this design
 
-1. The gate requires two different roles on every evidence row, everywhere, not only for
-   the demo cases. A single rule is simpler to test. The research-ingest design must then
-   say how rows checked by external cross-review are recorded.
-2. Cases entered or imported by a user cannot confirm links with their own check records;
-   only evidence copied unchanged from a sample keeps its check.
-3. Number-track kinds `next_version` and `successor_document`; clause-track kinds follow
-   Requirement 3.1 (`carried` covers "modified"; the computed difference shows how).
-4. Versions appear in the order the case file lists them, not sorted by date.
-5. No similarity figure in P0.
+Approved by the product owner on 2026-11-23; recorded in `docs/DECISIONS.md`.
+
+1. (D-008) The gate needs one role, A or B, who opened the official URL and found the
+   excerpt word for word; the same holds for the absence check of a `not_included` path. A
+   second check is not required. The loading conditions in D-002 and D-006 are unchanged:
+   for demo cases a recheck still needs two different roles, and `data/verification/` keeps
+   its `confirm` part.
+2. (D-009) Cases entered or imported by a user cannot confirm links with their own check
+   records; only evidence copied unchanged from a sample keeps its check.
+3. (D-010) Number-track kinds `next_version` and `successor_document`; clause-track kinds
+   follow Requirement 3.1 (`carried` covers "modified"; the computed difference shows how).
+4. (D-011) Versions appear in the order the case file lists them, not sorted by date.
+5. (D-012) No similarity figure in P0.
