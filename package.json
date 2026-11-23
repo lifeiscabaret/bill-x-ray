@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 4748 --strictPort",
+    "dev:fixtures": "vite --mode fixtures --host 127.0.0.1 --port 4748 --strictPort",
     "build": "node node_modules/typescript/bin/tsc --noEmit && vite build",
     "test": "vitest run",
     "check:copy": "tsx scripts/check-copy.ts",

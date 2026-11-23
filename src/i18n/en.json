@@ -1,9 +1,18 @@
 {
   "app": {
     "heading": "Same number. Different body.",
-    "tagline": "Follow the clause, not just the bill number."
+    "tagline": "Follow the clause, not just the bill number.",
+    "modes": "Mode",
+    "reduceMotion": "Reduce motion",
+    "error": "Something went wrong reading this case",
+    "sampleFailed": "This sample did not pass its checks",
+    "issueAt": "{where}: {message}"
   },
-  "mode": {},
+  "mode": {
+    "us": "United States",
+    "kr": "Korea",
+    "own": "Scan your own bill"
+  },
   "scanner": {
     "region": "Scan of the bill and its clauses",
     "label": "Scan the bill",

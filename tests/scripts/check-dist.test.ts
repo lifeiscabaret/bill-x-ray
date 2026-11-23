@@ -312,3 +312,36 @@ describe("check:dist as a command", () => {
     expect(cmd(["--extra-patterns", join(root, "package.json")]).status).toBe(2);
   });
 });
+
+// The schema library in the bundle (zod) carries three JSON Schema identifiers and one IPv6
+// check template. Neither is ever fetched. Each exemption is as narrow as the string itself.
+describe("check:dist allows what the schema library puts in the bundle (scan-screen 6)", () => {
+  const withJs = (extra: string): Record<string, string> => ({ ...clean(), "assets/app.js": appJs(extra) });
+  const foreign = (js: string) => {
+    const r = runDist(withJs(js));
+    return { code: r.code, findings: r.err.split("\n").filter((l) => l.includes("(foreign_host)")).length };
+  };
+
+  it.each([
+    'var u="http://json-schema.org/draft-04/schema#";',
+    'var u="http://json-schema.org/draft-07/schema#";',
+    'var u="https://json-schema.org/draft/2020-12/schema";',
+    "function f(e){return g(`http://[${e}]`)}",
+    "function f(a){return g(`http://[${a.b.c}]`)}",
+  ])("gives no finding for %s", (js) => {
+    expect(foreign(js)).toEqual({ code: 0, findings: 0 });
+  });
+
+  it.each([
+    ["another path on the same host", 'var u="http://json-schema.org/draft-07/other";'],
+    ["the root of the same host", 'var u="https://json-schema.org/";'],
+    ["a different draft over the other scheme", 'var u="https://json-schema.org/draft-07/schema#";'],
+    ["the IPv6 template with a path after it", "var u=`http://[${e}]/collect`;"],
+    ["the IPv6 template with text before it", "var u=`a http://[${e}]`;"],
+    ["a call inside the braces", "var u=`http://[${f(e)}]`;"],
+    ["a literal IPv6 address", 'var u="http://[2001:db8::1]/x.js";'],
+    ["a host taken from a variable", "var u=`https://${host}/x.js`;"],
+  ])("still gives foreign_host for %s", (_name, js) => {
+    expect(foreign(js)).toEqual({ code: 1, findings: 1 });
+  });
+});

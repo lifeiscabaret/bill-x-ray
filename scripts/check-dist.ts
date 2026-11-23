@@ -52,7 +52,19 @@ export const LIBRARY_URLS: readonly string[] = [
   "http://www.w3.org/1998/Math/MathML", // MathML namespace
   "http://www.w3.org/XML/1998/namespace", // xml: attribute namespace
   "https://react.dev/errors/", // React's error decoder link, printed inside an error message only
+  // zod's JSON Schema `$schema` identifiers, written into an output object, never fetched:
+  "http://json-schema.org/draft-04/schema#",
+  "http://json-schema.org/draft-07/schema#",
+  "https://json-schema.org/draft/2020-12/schema",
 ];
+
+/**
+ * zod's IPv6 check builds the string `http://[${x}]` only to parse it with `new URL`. The match
+ * is exempt only when the whole template literal is that and nothing else: a backtick, then
+ * `http://[`, one identifier or property access in braces, `]`, and the closing backtick.
+ */
+const IPV6_CHECK_TEMPLATE = /^`http:\/\/\[\$\{[A-Za-z_$][\w$.]*\}\]`/;
+const isIpv6CheckTemplate = (text: string, index: number): boolean => text[index - 1] === "`" && IPV6_CHECK_TEMPLATE.test(text.slice(index - 1));
 
 const ANALYTICS = ["beacon.min.js", "cloudflareinsights", "googletagmanager", "google-analytics", "plausible", "hotjar"];
 const CDN_HOSTS = ["fonts.googleapis", "fonts.gstatic", "unpkg", "jsdelivr", "cdnjs"];
@@ -326,7 +338,7 @@ export function checkDist(files: readonly DistFile[], options: CheckOptions): Ch
         } catch {
           // unparsable: treated as a foreign host below
         }
-        if (libraryUrl(m[0]) || (host !== "" && hosts.has(host))) continue;
+        if (libraryUrl(m[0]) || isIpv6CheckTemplate(text, m.index) || (host !== "" && hosts.has(host))) continue;
         add({ file: f.path, rule: "e", code: "foreign_host", message: "bundle names a host that is neither a bundled source link nor on the library list", ...at(m.index) });
       }
     }

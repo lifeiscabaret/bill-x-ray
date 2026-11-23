@@ -1,0 +1,88 @@
+{
+  "contractVersion": 1,
+  "caseId": "us-116-hr748",
+  "title": "Synthetic fixture: same number, different body",
+  "jurisdiction": "US",
+  "session": "Synthetic session",
+  "documents": [
+    {
+      "documentId": "Synthetic Bill 100",
+      "versionId": "ih",
+      "localEventLabel": "Introduced text",
+      "sourceUrl": "https://example.org/synthetic/bill-100/ih",
+      "title": "Synthetic Bill 100, introduced text",
+      "publisher": "Synthetic Legislature",
+      "sourceKind": "official",
+      "language": "en"
+    },
+    {
+      "documentId": "Synthetic Bill 100",
+      "versionId": "enr",
+      "localEventLabel": "Enrolled text",
+      "sourceUrl": "https://example.org/synthetic/bill-100/enr",
+      "title": "Synthetic Bill 100, enrolled text",
+      "publisher": "Synthetic Legislature",
+      "sourceKind": "official",
+      "language": "en"
+    },
+    {
+      "documentId": "Synthetic Law 7",
+      "versionId": "law",
+      "localEventLabel": "Public law",
+      "sourceUrl": "https://example.org/synthetic/law-7",
+      "title": "Synthetic Law 7",
+      "publisher": "Synthetic Legislature",
+      "sourceKind": "official",
+      "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "syn-us-e1",
+      "documentId": "Synthetic Bill 100",
+      "versionId": "ih",
+      "anchor": "Sec. 2",
+      "excerpt": "Section 2 repeals the invented levy on invented coverage.",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "syn-us-e2",
+      "documentId": "Synthetic Law 7",
+      "versionId": "law",
+      "anchor": "Div. N Sec. 5",
+      "excerpt": "The invented levy on invented coverage is repealed for later years.",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [
+    { "eventId": "syn-us-ev1", "documentId": "Synthetic Bill 100", "versionId": "ih", "eventKind": "introduced", "eventDate": "2019-01-02", "evidenceRefs": [] },
+    { "eventId": "syn-us-ev2", "documentId": "Synthetic Bill 100", "versionId": "enr", "eventKind": "promulgated", "eventDate": "2020-03-27", "evidenceRefs": [] },
+    { "eventId": "syn-us-ev3", "documentId": "Synthetic Law 7", "versionId": "law", "eventKind": "effective", "eventDate": "2999-01-01", "evidenceRefs": [] }
+  ],
+  "paths": [
+    {
+      "pathId": "syn-us-p1",
+      "from": { "type": "version", "documentId": "Synthetic Bill 100", "versionId": "ih" },
+      "to": { "type": "version", "documentId": "Synthetic Bill 100", "versionId": "enr" },
+      "kind": "next_version",
+      "evidenceRefs": ["syn-us-e1"],
+      "reviewState": "unverified"
+    },
+    {
+      "pathId": "syn-us-p2",
+      "from": { "type": "clause", "evidenceId": "syn-us-e1" },
+      "to": { "type": "clause", "evidenceId": "syn-us-e2" },
+      "kind": "same_outcome_separate_law",
+      "evidenceRefs": ["syn-us-e1", "syn-us-e2"],
+      "reviewState": "unverified"
+    },
+    {
+      "pathId": "syn-us-p3",
+      "from": { "type": "clause", "evidenceId": "syn-us-e1" },
+      "to": { "type": "clause", "evidenceId": "syn-us-e2" },
+      "kind": "carried",
+      "evidenceRefs": [],
+      "reviewState": "unverified"
+    }
+  ]
+}

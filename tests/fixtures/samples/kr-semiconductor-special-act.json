@@ -1,0 +1,105 @@
+{
+  "contractVersion": 1,
+  "caseId": "kr-semiconductor-special-act",
+  "title": "Synthetic fixture: different number",
+  "jurisdiction": "KR",
+  "session": "Synthetic session",
+  "documents": [
+    {
+      "documentId": "Synthetic Bill A",
+      "versionId": "original",
+      "localEventLabel": "시험용 원안",
+      "sourceUrl": "https://example.org/synthetic/bill-a",
+      "title": "Synthetic Bill A, original",
+      "publisher": "Synthetic Assembly",
+      "sourceKind": "official",
+      "language": "ko"
+    },
+    {
+      "documentId": "Synthetic Bill B",
+      "versionId": "alternative",
+      "localEventLabel": "시험용 대안",
+      "sourceUrl": "https://example.org/synthetic/bill-b",
+      "title": "Synthetic Bill B, committee alternative",
+      "publisher": "Synthetic Assembly",
+      "sourceKind": "official",
+      "language": "ko"
+    },
+    {
+      "documentId": "Synthetic Act C",
+      "versionId": "promulgated",
+      "localEventLabel": "시험용 법률",
+      "sourceUrl": "https://example.org/synthetic/act-c",
+      "title": "Synthetic Act C",
+      "publisher": "Synthetic Gazette",
+      "sourceKind": "official",
+      "language": "ko"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "syn-kr-e1",
+      "documentId": "Synthetic Bill A",
+      "versionId": "original",
+      "anchor": "제15조",
+      "excerpt": "시험용 기반시설 지원에 관한 가상의 조항이다.",
+      "translation": { "text": "An invented clause on invented infrastructure support.", "language": "en" },
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "syn-kr-e2",
+      "documentId": "Synthetic Act C",
+      "versionId": "promulgated",
+      "anchor": "제18조",
+      "excerpt": "시험용 기반시설 지원을 수정하여 정한 가상의 조항이다.",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "syn-kr-e3",
+      "documentId": "Synthetic Bill A",
+      "versionId": "original",
+      "anchor": "제33조",
+      "excerpt": "시험용 근로시간 예외에 관한 가상의 조항이다.",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [
+    { "eventId": "syn-kr-ev1", "documentId": "Synthetic Bill A", "versionId": "original", "eventKind": "introduced", "eventDate": "2025-01-02", "evidenceRefs": [] },
+    { "eventId": "syn-kr-ev2", "documentId": "Synthetic Act C", "versionId": "promulgated", "eventKind": "promulgated", "eventDate": "2026-02-10", "evidenceRefs": [] },
+    { "eventId": "syn-kr-ev3", "documentId": "Synthetic Act C", "versionId": "promulgated", "eventKind": "effective", "eventDate": "2999-01-01", "evidenceRefs": [] }
+  ],
+  "paths": [
+    {
+      "pathId": "syn-kr-p1",
+      "from": { "type": "version", "documentId": "Synthetic Bill A", "versionId": "original" },
+      "to": { "type": "version", "documentId": "Synthetic Bill B", "versionId": "alternative" },
+      "kind": "successor_document",
+      "evidenceRefs": ["syn-kr-e1"],
+      "reviewState": "unverified"
+    },
+    {
+      "pathId": "syn-kr-p2",
+      "from": { "type": "version", "documentId": "Synthetic Bill B", "versionId": "alternative" },
+      "to": { "type": "version", "documentId": "Synthetic Act C", "versionId": "promulgated" },
+      "kind": "successor_document",
+      "evidenceRefs": ["syn-kr-e2"],
+      "reviewState": "unverified"
+    },
+    {
+      "pathId": "syn-kr-p3",
+      "from": { "type": "clause", "evidenceId": "syn-kr-e1" },
+      "to": { "type": "clause", "evidenceId": "syn-kr-e2" },
+      "kind": "carried",
+      "evidenceRefs": ["syn-kr-e1", "syn-kr-e2"],
+      "reviewState": "unverified"
+    },
+    {
+      "pathId": "syn-kr-p4",
+      "from": { "type": "clause", "evidenceId": "syn-kr-e3" },
+      "to": { "type": "version", "documentId": "Synthetic Act C", "versionId": "promulgated" },
+      "kind": "not_included",
+      "evidenceRefs": ["syn-kr-e3"],
+      "reviewState": "unverified"
+    }
+  ]
+}
