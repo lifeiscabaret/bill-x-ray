@@ -114,8 +114,9 @@ to P.L. 116-94 Div. N Sec. 503: Same outcome, separate law. Not verified."
 - Version node: `documentId`, `localEventLabel` and the dates of that version, each with its
   kind ("Promulgated 2026-02-10", "Effective 2026-08-11"). A future effective or applied
   date reads "Scheduled" (Req 4.5). Unknown values read "Not verified" (Req 4.4).
-- Clause node: anchor ("Sec. 2(a)", "§18①") and the first 60 characters of the excerpt,
-  marked up with `lang` set to the version's language.
+- Clause node: anchor ("Sec. 2(a)", "§18①") and the first 60 characters of the excerpt
+  (of the fact sentence for news from another outlet), marked up with `lang` set to the
+  language of that text.
 - Path label: kind label and status text, as in the tables above.
 - Activating any of them (click, tap, Enter or Space) opens the evidence panel.
 
@@ -125,7 +126,8 @@ to P.L. 116-94 Div. N Sec. 503: Same outcome, separate law. Not verified."
   original link (new tab, `rel="noopener noreferrer"`) and the source language.
 - For a clause: the version details plus anchor, excerpt in the original language, the
   translation labelled "Translation" when present (never in place of the original), and who
-  checked it, as roles and dates (Req 3.2).
+  checked it, as roles and dates (Req 3.2). For news from another outlet there is no excerpt:
+  the panel shows outlet, date, title, link and the fact sentence (D-016).
 - For a path: kind, status, the "Needs" list from the contract, and for each evidence row the
   clause location in the earlier and the later document. For `carried`, `transferred` and
   `same_outcome_separate_law` paths the panel also shows the computed difference between the
@@ -146,7 +148,8 @@ Sections, top to bottom:
 1. **Bill:** jurisdiction, session, bill number.
 2. **Versions** (add, remove, reorder with buttons): version label, title, publisher, source
    URL, original language, dates (kind chosen from the contract's list, date optional), and
-   optional pasted text.
+   optional pasted text. A version marked as news from another outlet takes a fact sentence
+   in place of an excerpt (D-016).
 3. **Clauses:** for each version, anchor and excerpt. The tool checks that the excerpt is in
    the pasted text when there is one.
 4. **Compare:** pick two clauses or two versions; the difference appears at once in the same

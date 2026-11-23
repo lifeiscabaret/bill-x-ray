@@ -34,6 +34,8 @@ Evaluative words such as "broken promise", "lie", "failure", "trick" or "monster
 ## Evidence on screen
 - Every path and status can show its evidence: source title, publisher, version, what the
   date means, the clause location, a short original-language excerpt and the original link.
+- News from another outlet shows no excerpt. It shows outlet, date, title, link and the
+  team's own fact sentence (D-016).
 - A translation, if shown, is labelled "Translation".
 - Show date kinds separately: passed, promulgated, effective, applied.
 - Politically divided cases present each position with its source and equal weight.

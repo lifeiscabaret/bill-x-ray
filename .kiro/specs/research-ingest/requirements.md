@@ -16,7 +16,8 @@ are pending):
 - `<research>/verify/<module>/열람확인.jsonl`: the verification ledger, 589 rows (source 400,
   document 116, evidence 73), recording whether each URL opened and whether each excerpt
   appears word for word on the linked page.
-- Later: a cross-review result per row (load as is / load after fix / re-research).
+- Later: a cross-review verdict per row (`load_as_is` / `load_after_fix` / `re_research`), in
+  the review verdict format shared with ATLAS Lineage spec 04 (D-017).
 
 Role: A.
 
@@ -80,10 +81,13 @@ and malformed values never reach the contract.
    reference (`*_ids`, `case_id`, `document_id`, `from_ref`, `to_ref`) resolves to a Row of
    the expected type; `from_ref` and `to_ref` may be `"promise"`.
 2. THE Ingest SHALL accept dates only as YYYY-MM-DD, YYYY-MM, YYYY or unknown.
-3. THE Ingest SHALL check excerpt lengths: at most 200 characters for news and 300 for
-   official documents.
+3. THE Ingest SHALL check excerpt lengths: at most 300 characters for official documents and
+   200 for Seoul Economic Daily articles.
 4. IF a Row fails a check, THEN THE Ingest SHALL exclude it with the reason (for example a
    reference of the wrong type, such as an evidence id inside `promise_source_ids`).
+5. THE Ingest SHALL NOT copy `excerpt_original` of a news Source from another outlet into
+   committed data. The item keeps outlet, date, title and link; its fact sentence stays
+   `null` until a person writes it (D-016).
 
 ### Requirement 4: URL normalization
 
@@ -127,12 +131,18 @@ repository holds nothing that failed a check.
 
 1. THE Loading_Gate SHALL load a Row into committed data only when its cited sources opened in
    the Ledger, its evidence passes the Evidence_Gate, the case `confidence` is `high` or
-   `medium`, and cross-review classified the Row as "load as is" (or, for a Gold_Set case, a
+   `medium`, and cross-review passed the Row (criterion 5) (or, for a Gold_Set case, a
    confirmed Recheck stands in for cross-review; Requirement 9, decision D-002).
-2. WHILE neither a cross-review result nor a confirmed Recheck applies to a Row, THE
+2. WHILE neither a review verdict nor a confirmed Recheck applies to a Row, THE
    Loading_Gate SHALL exclude it with the reason "cross-review pending".
 3. THE Ingest SHALL list every excluded Row with its reason; nothing is dropped silently.
 4. WHEN the gate changes, THE team SHALL add a line with the reason to `docs/DECISIONS.md`.
+5. THE Loading_Gate SHALL read cross-review from per-row `review_verdict` records kept in
+   the private research folder: `id` as `<module>-RVW-<four digits>`, `row_id`, `verdict`
+   (exactly one of `load_as_is`, `load_after_fix`, `re_research`), `issues`, `action`,
+   `packet`, `reviewer` (a tool or role label, never a person's name) and `reviewed_at`
+   (YYYY-MM-DD). A Row passes only when it has at least one verdict and every verdict is
+   `load_as_is` (D-017).
 
 ### Requirement 7: One mapping module
 

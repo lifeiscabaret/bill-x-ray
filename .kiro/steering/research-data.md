@@ -35,7 +35,8 @@ Load a row only if all three hold:
 1. Its cited sources opened and its evidence matched, according to the verification
    ledger (D-001).
 2. For cases, `confidence` is `high` or `medium`.
-3. Cross-review classified the row as "load as is". For the 19 gold (demo) cases only, a
+3. Cross-review passed the row: it has at least one review verdict and every verdict is
+   `load_as_is` (see "Review verdicts" below). For the 19 gold (demo) cases only, a
    team recheck stands in for cross-review when the person who rechecks and the person who
    confirms are different and both open the official URL; `data/verification/` records
    who (role A or B), when, the URL and the result (D-002, D-006). For B3a-CASE-0001, which
@@ -44,6 +45,15 @@ Load a row only if all three hold:
 
 Rows that fail stay out and are listed in the load report with the reason. Any change to
 this gate is recorded in `docs/DECISIONS.md`.
+
+## Review verdicts (D-017)
+Cross-review results use the format shared with ATLAS Lineage spec 04: one `review_verdict`
+record per judged row, kept in the private research folder, never in this repository.
+- Fields: `type` (`review_verdict`), `id` (`<module>-RVW-<four digits>`), `row_id`,
+  `verdict`, `issues`, `action`, `packet`, `reviewer` and `reviewed_at` (YYYY-MM-DD).
+- `verdict` is exactly one of `load_as_is`, `load_after_fix` or `re_research`.
+- `reviewer` is a tool or role label, never a person's name.
+- A row passes only if it has at least one verdict and every verdict is `load_as_is`.
 
 ## Facts, dates and wording
 - Never invent bill numbers, law numbers, URLs or dates. Unknown values stay `null` (or
@@ -67,7 +77,14 @@ this gate is recorded in `docs/DECISIONS.md`.
 - Some research URLs contain look-alike characters: `∶` (U+2236) for `:` and `·` (U+00B7)
   for `.`. Normalize URL fields (url, official_url, base_url) only, and log every change.
 - Treat `null`, empty and `"unknown"` URLs as missing.
-- Excerpts stay within 200 characters for news and 300 for official documents.
+- Excerpts of legal originals (Korean National Assembly bills, statutes, the official
+  gazette, court decisions; U.S. federal documents such as congress.gov and govinfo) stay
+  within 300 characters. Excerpts of Seoul Economic Daily articles stay within 200 (D-016).
+- Articles from other outlets, Korean or foreign, carry no excerpt in this repository or on
+  the screen. They carry only the outlet, date, title, link and a fact sentence the team
+  wrote itself.
+- A news excerpt needed for checking stays in the private research folder, never in a
+  public file, and no public file gives that folder's path.
 
 ## Records
 - Each gate or load decision is one line in `docs/DECISIONS.md`. Each ingest run lists its

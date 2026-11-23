@@ -42,8 +42,9 @@ no link exists.
 The Seoul Economic Daily newsroom legislative tracking project is the first Korean dataset
 and an entry point for reported promises and events. Facts about bills and clauses rest on
 bill records and statute texts, not on the promise data. Overseas cases need no promise
-text. Its brand, data/API and article redistribution rights are not cleared, so nothing
-from it enters this repository until they are.
+text. Short excerpts of Seoul Economic Daily articles are allowed (D-016). Its brand,
+data/API and full-article redistribution rights are not cleared, so nothing else from it
+enters this repository until they are.
 
 ## Evidence logic
 - The tool computes text differences. People may choose the material and point to

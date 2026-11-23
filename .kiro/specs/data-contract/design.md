@@ -89,7 +89,9 @@ export interface PromiseRecord {
   publisher: string;
   sourceUrl: string | null;
   date: PartialDate;
-  excerpt?: string | null;               // news: at most 200 characters
+  ownOutlet?: boolean;                   // true for a Seoul Economic Daily article (D-016)
+  excerpt?: string | null;               // Seoul Economic Daily article only, at most 200 characters; other outlets: none
+  factSentence?: string | null;          // our own sentence for the fact the news item reports; other outlets use it instead of an excerpt
 }
 
 export interface DocumentVersion {
@@ -100,6 +102,8 @@ export interface DocumentVersion {
   title: string;                         // (added) Req 1.2
   publisher: string;                     // (added) Req 1.2
   sourceKind: "official" | "news" | "other"; // (added) Req 4.1, 4.3, 4.5
+  ownOutlet?: boolean;                   // (added) news only: true for a Seoul Economic Daily article (D-016)
+  factSentence?: string | null;          // (added) news only: our own sentence; shown where other sources show an excerpt (D-016)
   language: LanguageTag;                 // (added) language of the original text
   pastedText?: string | null;            // (added) text the user pasted; Req 6.3, 6.4, Req 7
   provenance?: string[];
@@ -110,7 +114,7 @@ export interface Evidence {
   documentId: string;
   versionId: string;
   anchor: string;                        // clause location as the source writes it: "Sec. 2(a)", "제18조제1항"
-  excerpt: string;                       // original language; official ≤ 300, news ≤ 200 characters
+  excerpt: string;                       // original language; official ≤ 300, Seoul Economic Daily news ≤ 200 characters; "" on a version of news from another outlet (Req 4.7)
   translation?: { text: string; language: LanguageTag } | null;  // display only (Req 4.3)
   check: EvidenceCheck;                  // 확인 상태
   provenance?: string[];
@@ -260,7 +264,7 @@ An evidence row passes only when every line holds; each failing line adds its re
 | Its version exists and `sourceKind` is `official` | `not_official_source` |
 | `sourceUrl` is present and a valid http(s) URL after normalization | `source_url_missing` / `source_url_invalid` |
 | `anchor` is not empty | `anchor_missing` |
-| `excerpt` is not empty and within its limit | `excerpt_missing` / `excerpt_too_long` |
+| `excerpt` is not empty and within its limit (official 300, Seoul Economic Daily news 200) | `excerpt_missing` / `excerpt_too_long` |
 | `check.state` is `matched_official` | `not_checked`, `partial`, `could_not_open`, `mismatch`, `pasted_text_only` |
 | `check.url` equals `sourceUrl` after normalization; when `check.confirmedUrl` is set it must equal `sourceUrl` too | `checked_other_url` |
 | `checkedBy` and `checkedAt` are set (one role is enough; `confirmedBy` and `confirmedAt` are optional) | `checker_missing` |
@@ -305,6 +309,18 @@ Rank: `confirmed` is above every other status; the other three are not ordered.
 - Two events with the same `documentId`, `versionId` and `eventKind` but different dates
   both stay, and each gets a `date_conflict` warning naming the other (Req 5.7).
 
+### News excerpts (D-016, Req 4.5, 4.7)
+
+- A news item is a version with `sourceKind: "news"` or the `promise` record. It is from the
+  Seoul Economic Daily only when `ownOutlet` is `true`; any other value means another
+  outlet, Korean or foreign.
+- Another outlet's item carries no excerpt: a non-empty `promise.excerpt`, or a non-empty
+  `excerpt` on an Evidence row of such a version, is `news_excerpt_not_allowed` (block).
+  The item shows outlet, date, title, link and `factSentence`. Nothing writes
+  `factSentence`; a person does, and a missing one stays `null`.
+- A Seoul Economic Daily article may carry an excerpt of at most 200 characters.
+- News never passes the evidence gate, with or without an excerpt (Req 4.3).
+
 ### URLs
 
 - In `sourceUrl`, `check.url`, `check.confirmedUrl` and `promise.sourceUrl` only:
@@ -318,7 +334,7 @@ Rank: `confirmed` is above every other status; the other three are not ordered.
 
 | Severity | Codes | Effect |
 |---|---|---|
-| block | `schema_*`, `duplicate_id`, `ref_unresolved`, `title_missing`, `publisher_missing`, `url_invalid`, `excerpt_too_long`, `excerpt_not_in_pasted_text`, `date_format`, `date_kind_missing`, `kind_endpoint_mismatch` | The record leaves the `ScanModel` and is listed in `excluded`; the form keeps the field marked. `validate:data` fails on any block in bundled data. |
+| block | `schema_*`, `duplicate_id`, `ref_unresolved`, `title_missing`, `publisher_missing`, `url_invalid`, `excerpt_too_long`, `news_excerpt_not_allowed`, `excerpt_not_in_pasted_text`, `date_format`, `date_kind_missing`, `kind_endpoint_mismatch` | The record leaves the `ScanModel` and is listed in `excluded`; the form keeps the field marked. `validate:data` fails on any block in bundled data. |
 | warn | `url_missing`, `url_lookalike_fixed`, `url_session_token`, `anchor_not_in_pasted_text`, `date_conflict`, `review_state_overclaim`, `number_or_title_as_evidence`, `check_record_ignored` | The record stays. A warning never raises a status (Req 6.6). |
 
 ### Origin

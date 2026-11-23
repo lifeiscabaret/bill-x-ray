@@ -37,5 +37,6 @@ Japan and China appear in the research data; the P0 samples are the US and Korea
 - API keys live in environment variables only. Never commit keys, .env files or sample keys
   that look real.
 - The copyright status of statutes and each source's terms of use come from the B-5
-  research once it passes review. Until then, store excerpts within the length limits
-  only.
+  research once it passes review. Until then, store excerpts of these official sources
+  within the length limits in `research-data.md` only. News from other outlets carries no
+  excerpt (D-016).

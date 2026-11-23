@@ -8,7 +8,7 @@
       "matcher": "(^|[\\\\/])src[\\\\/](ui[\\\\/].*\\.tsx|i18n[\\\\/][^\\\\/]+\\.json)$",
       "action": {
         "type": "agent",
-        "prompt": "UI copy may have changed. Check it against .kiro/steering/ui-copy.md. English is the default language. Flag evaluative words in English or Korean (such as broken promise, lie, failure, trick, monster, 약속 파기, 거짓말, 실패, 꼼수) and propose record-state wording instead. Check that user-facing strings come from src/i18n/ rather than being written into components, that every path or status on screen can show its source title, publisher, version, date kind, clause location, original excerpt and link, that translations are labelled, and that line types and statuses can be read without colour. Change copy only, not logic."
+        "prompt": "UI copy may have changed. Check it against .kiro/steering/ui-copy.md. English is the default language. Flag evaluative words in English or Korean (such as broken promise, lie, failure, trick, monster, 약속 파기, 거짓말, 실패, 꼼수) and propose record-state wording instead. Check that user-facing strings come from src/i18n/ rather than being written into components, that every path or status on screen can show its source title, publisher, version, date kind, clause location, original excerpt and link (for news from another outlet: no excerpt, our own fact sentence instead), that translations are labelled, and that line types and statuses can be read without colour. Change copy only, not logic."
       },
       "enabled": true
     }

@@ -74,7 +74,8 @@ can check it myself.
 
 1. WHEN the user selects a clause or a path, THE Evidence_Panel SHALL show the source title,
    publisher, version, what the date means, the clause location in the earlier and the
-   later document, a short original-language excerpt and the original link.
+   later document, a short original-language excerpt and the original link. For news from
+   another outlet it shows the team's own fact sentence instead of an excerpt (D-016).
 2. WHERE a translation exists, THE Evidence_Panel SHALL show it labelled "Translation" next
    to the original, never in its place.
 3. WHEN a Path is not confirmed, THE Evidence_Panel SHALL show its status and what is still

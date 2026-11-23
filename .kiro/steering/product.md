@@ -87,5 +87,5 @@ the UI is distinctive and functional enough. Two countries in one app is not Ske
 
 ## Decisions not yet made
 The data license, rights to the Seoul Economic Daily newsroom legislative tracking project
-(brand, data/API, article redistribution), deployment and the act of submitting. Nothing in
-this repository authorizes them.
+(brand, data/API, full-article redistribution; short excerpts are allowed under D-016),
+deployment and the act of submitting. Nothing in this repository authorizes them.
