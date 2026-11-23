@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import { checkPathKinds, checkRecords, checkReferences } from "./checks";
+import { gateCase, resolveChecks } from "./gate";
 import {
   caseShellSchema, documentVersionSchema, evidenceSchema, eventSchema, pathSchema, promiseSchema,
   schemaIssues,
@@ -14,11 +15,12 @@ type JsonPath = (string | number)[];
 /**
  * Parses one Case. Never throws for any JSON value: problems come back as issues.
  *
- * Stage 1 (structure), stage 2 (URL normalization) and stage 3 (semantic checks) are done.
+ * Stage 1 (structure), stage 2 (URL normalization), stage 3 (semantic checks) and stage 4
+ * (origin handling and the evidence gate, which fills `gate`) are done.
  * A record with a block issue is left out of `case` and listed in `excluded`; a warning keeps
  * it. A record that points at a removed record is removed too (`ref_unresolved`). If the top
- * level itself is unusable, `model` is null. The other stages (gate, dates, status) are added
- * by later tasks, so `gate`, `paths` and `dates` are still empty here.
+ * level itself is unusable, `model` is null. The other stages (dates, status) are added by
+ * later tasks, so `paths` and `dates` are still empty here.
  *
  * Issue paths always index the input, not the shortened lists: `at` keeps, for each list, the
  * input position of every record that is still in the Case.
@@ -110,12 +112,18 @@ export function parseCase(input: unknown, options: ParseOptions): ParseResult {
   while (apply(checkReferences(current)));
   apply(checkPathKinds(current));
 
+  // Stage 4: origin handling, then the evidence gate for every row that is left.
+  const origin = resolveChecks(current, options.origin, options.bundledChecks ?? []);
+  current = origin.case;
+  apply(origin.issues);
+  const gate = gateCase(current);
+
   return {
     model: {
       case: current,
       origin: options.origin,
       referenceDate: options.referenceDate,
-      gate: {},
+      gate,
       paths: {},
       dates: {},
       excluded,
