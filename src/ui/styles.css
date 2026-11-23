@@ -1,0 +1,170 @@
+/* Bill X-Ray styles. Plain CSS with custom properties; system fonts only (tech.md).
+   Each scan-screen task adds its own commented block; edit by targeted replacement. */
+
+/* ---- Base (scan-screen 3) ---- */
+:root {
+  --ink: #1b1b1f;
+  --paper: #ffffff;
+  --muted: #4a4a55;
+  --clause: #0b5f73; /* colour is only an extra: kind and status also read from shape and text */
+  --focus: #1b1b1f;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---- Scan box: the parent of both layers, sized by boxSize(layout) ---- */
+.scan-box {
+  position: relative;
+}
+.connectors,
+.nodes {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.connectors {
+  z-index: 0;
+  overflow: visible;
+}
+.nodes {
+  z-index: 1;
+}
+
+/* ---- Line patterns: one per path kind (design, "Lines without colour") ---- */
+.connector {
+  --line: var(--clause);
+}
+.connector[data-kind="next_version"],
+.connector[data-kind="successor_document"] {
+  --line: var(--ink);
+}
+.connector .line {
+  fill: none;
+  stroke: var(--line);
+  vector-effect: non-scaling-stroke; /* widths and dashes stay in screen pixels */
+}
+.connector .line--inner {
+  stroke: var(--paper);
+}
+.connector--thick_solid .line,
+.connector--thick_solid_arrow .line {
+  stroke-width: 6px;
+}
+.connector--thin_solid .line {
+  stroke-width: 2px;
+}
+.connector--double .line {
+  stroke-width: 10px;
+}
+.connector--double .line--inner {
+  stroke-width: 4px;
+}
+.connector--long_dash .line {
+  stroke-width: 3px;
+  stroke-dasharray: 20 10;
+}
+.connector--dotted_open_end .line {
+  stroke-width: 3px;
+  stroke-dasharray: 1 7;
+  stroke-linecap: round;
+}
+
+/* ---- End markers: one per status (filled, hollow with "?") and the kind's own ends ---- */
+.connector .arrow {
+  fill: var(--line);
+}
+.connector .ring {
+  fill: var(--paper);
+  stroke: var(--line);
+  stroke-width: 2px;
+}
+.connector .end--filled {
+  fill: var(--line);
+}
+.connector .end--hollow circle {
+  fill: var(--paper);
+  stroke: var(--line);
+  stroke-width: 2.5px;
+}
+.connector .end__q {
+  fill: var(--ink);
+  font: 700 13px/1 system-ui, sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* ---- Nodes: buttons with a fixed box (NODE_SIZE) centred on their position ---- */
+.node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px;
+  margin: 0;
+  text-align: left;
+  font: 12px/1.2 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* The three node kinds differ by border shape, not colour. */
+.node--clause {
+  border-width: 1px 1px 1px 7px;
+}
+.node--promise {
+  border-style: double;
+  border-width: 5px;
+}
+.node__title {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.node__doc,
+.node__date,
+.node__stage {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.node__text {
+  overflow-wrap: anywhere;
+}
+
+/* ---- Path labels: sit on the line, between two nodes ---- */
+.label {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  max-width: 124px;
+  margin: 0;
+  padding: 2px 8px;
+  text-align: center;
+  font: 11px/1.25 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 10px;
+  cursor: pointer;
+}
+/* Across a row the gap between two nodes is barely wider than a label, so the label rides
+   above the line there and leaves the end marker visible. In the column layout it sits on the line. */
+.nodes[data-orientation="horizontal"] .label {
+  transform: translate(-50%, calc(-100% - 10px));
+}
+.label__kind,
+.label__status {
+  display: block;
+}
+.label__status {
+  font-weight: 700;
+}

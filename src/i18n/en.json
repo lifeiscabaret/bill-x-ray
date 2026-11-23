@@ -5,12 +5,56 @@
   },
   "mode": {},
   "scanner": {},
-  "kind": {},
-  "status": {},
+  "kind": {
+    "next_version": "Same number, next version",
+    "successor_document": "Continued as {documentId}",
+    "carried": "Carried into a later version",
+    "transferred": "Transferred to another law",
+    "same_outcome_separate_law": "Same outcome, separate law",
+    "not_included": "Not found in this final version",
+    "promise": "Promise record",
+    "track": {
+      "number": "Number path",
+      "clause": "Clause path"
+    },
+    "endpoint": {
+      "version": "{documentId} ({versionId})",
+      "clause": "{documentId} {anchor}"
+    },
+    "labelWithStatus": "{kind}. {status}",
+    "pathName": "{track} from {from} to {to}: {label}"
+  },
+  "status": {
+    "not_verified": "Not verified",
+    "omission_not_verified": "Omission not verified",
+    "evidence_missing": "Evidence missing"
+  },
   "need": {},
   "issue": {},
-  "dateKind": {},
-  "timing": {},
+  "dateKind": {
+    "introduced": "Introduced",
+    "committee_note": "Committee note",
+    "amended": "Amended",
+    "passed": "Passed",
+    "discarded": "Discarded",
+    "promulgated": "Promulgated",
+    "published": "Published",
+    "effective": "Effective",
+    "applied": "Applied",
+    "postponed": "Postponed",
+    "repealed": "Repealed",
+    "struck_down": "Struck down",
+    "other": "Other date",
+    "unknown": "Date"
+  },
+  "timing": {
+    "past": "Date has passed",
+    "scheduled": "Scheduled",
+    "too_coarse": "Date incomplete",
+    "unknown": "Not verified",
+    "date": "{kind}: {date}",
+    "dateWithTiming": "{kind}: {date} ({timing})"
+  },
   "panel": {},
   "form": {}
 }
