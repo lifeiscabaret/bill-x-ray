@@ -355,10 +355,29 @@ describe("rule 5: the same outcome through a separate law", () => {
     expect(derive(c)).toMatchObject({ status: "not_verified", needs: [{ code: "open_official_source", params: { evidenceId: "a2" } }] });
   });
 
-  it("a promise start asks for passing rows from the separate law's document", () => {
+  it("a promise start never confirms, even when every row of the separate law passes (Req 3.6)", () => {
     const path: Path = { ...confirmedPath.same_outcome_separate_law, from: { type: "promise" }, evidenceRefs: ["b1"] };
-    expect(derive(caseWith(path)).status).toBe("confirmed");
-    expect(codes(derive(caseWith({ ...path, evidenceRefs: ["a1"] })))).toEqual(["evidence_from_both_documents"]);
+    expect(derive(caseWith(path))).toMatchObject({ status: "not_verified", drawable: true, needs: [{ code: "evidence_from_both_documents" }] });
+    const both = caseWith({ ...path, evidenceRefs: ["a1", "b1"] });
+    expect(derive(both)).toMatchObject({ status: "not_verified", needs: [{ code: "evidence_from_both_documents" }] });
+  });
+
+  it("a promise start still lists the need of each failing row", () => {
+    const path: Path = { ...confirmedPath.same_outcome_separate_law, from: { type: "promise" }, evidenceRefs: ["b1", "a1"] };
+    const c = caseWith(path, (x) => { fail(x, "b1", "could_not_open"); fail(x, "a1", "mismatch"); });
+    expect(derive(c)).toMatchObject({
+      status: "not_verified",
+      needs: [
+        { code: "evidence_from_both_documents" },
+        { code: "open_official_source", params: { evidenceId: "b1" } },
+        { code: "resolve_mismatch", params: { evidenceId: "a1" } },
+      ],
+    });
+  });
+
+  it("carried and not_included keep a promise start as before", () => {
+    expect(derive(caseWith({ ...confirmedPath.carried, from: { type: "promise" } })).status).toBe("confirmed");
+    expect(derive(caseWith({ ...confirmedPath.not_included, from: { type: "promise" } })).status).toBe("confirmed");
   });
 
   it("an official transfer is a different kind: the same single-document evidence confirms transferred but not same_outcome_separate_law", () => {

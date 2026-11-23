@@ -113,13 +113,14 @@ export function deriveStatus(path: Path, c: Case, gate: Readonly<Record<string, 
   }
 
   // Rule 5: the same outcome through a separate law needs passing rows from both documents.
-  // A promise end has no document, so only the clause ends name the documents that are required.
+  // A promise start has no version and its source is news, which never passes the gate, so the
+  // original side cannot be met (Req 3.6): such a path stays not verified, whatever else passes.
   if (path.kind === "same_outcome_separate_law") {
     const needs: Need[] = [];
     const documents = new Set(
       [path.from, path.to].flatMap((end) => (end.type === "clause" ? [evidenceById.get(end.evidenceId)!.documentId] : [])),
     );
-    const covered = [...documents].every((id) => rows.some((e) => e.documentId === id && passes(e)));
+    const covered = path.from.type !== "promise" && [...documents].every((id) => rows.some((e) => e.documentId === id && passes(e)));
     if (!covered) needs.push({ code: "evidence_from_both_documents" });
     needs.push(...failing);
     return needs.length === 0 && allPass ? result("confirmed", true, [], setAside) : result("not_verified", true, needs, setAside);
