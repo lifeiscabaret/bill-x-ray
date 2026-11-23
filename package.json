@@ -10,7 +10,8 @@
     "dev": "vite --host 127.0.0.1 --port 4748 --strictPort",
     "build": "node node_modules/typescript/bin/tsc --noEmit && vite build",
     "test": "vitest run",
-    "check:copy": "tsx scripts/check-copy.ts"
+    "check:copy": "tsx scripts/check-copy.ts",
+    "check:repo": "tsx scripts/check-repo.ts"
   },
   "dependencies": {
     "diff": "^9.0.0",
