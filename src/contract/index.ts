@@ -2,3 +2,4 @@
 export * from "./types";
 export { parseCase } from "./parse";
 export { caseSchema, recheckSchema, formatPath } from "./schema";
+export { deriveStatus, deriveStatuses, trackOf, type StatusResult } from "./status";

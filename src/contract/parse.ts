@@ -6,6 +6,7 @@ import {
   caseShellSchema, documentVersionSchema, evidenceSchema, eventSchema, pathSchema, promiseSchema,
   schemaIssues,
 } from "./schema";
+import { deriveStatuses } from "./status";
 import type { Case, Issue, ParseOptions, ParseResult, ScanModel } from "./types";
 import { normalizeCaseUrls } from "./urls";
 
@@ -17,12 +18,12 @@ type JsonPath = (string | number)[];
  * Parses one Case. Never throws for any JSON value: problems come back as issues.
  *
  * Stage 1 (structure), stage 2 (URL normalization), stage 3 (semantic checks), stage 4
- * (origin handling and the evidence gate, which fills `gate`) and stage 5 (dates, which
- * fills `dates`) are done.
+ * (origin handling and the evidence gate, which fills `gate`), stage 5 (dates, which fills
+ * `dates`) and stage 6 (path status, which fills `paths`) are done.
  * A record with a block issue is left out of `case` and listed in `excluded`; a warning keeps
- * it. A record that points at a removed record is removed too (`ref_unresolved`). If the top
- * level itself is unusable, `model` is null. The path status stage is added by a
- * later task, so `paths` is still empty here.
+ * it. A record that points at a removed record is removed too (`ref_unresolved`). A path
+ * removed this way has no entry in `paths`; `excluded` keeps its place in the input and the
+ * first issue code that removed it. If the top level itself is unusable, `model` is null.
  *
  * Issue paths always index the input, not the shortened lists: `at` keeps, for each list, the
  * input position of every record that is still in the Case.
@@ -126,13 +127,18 @@ export function parseCase(input: unknown, options: ParseOptions): ParseResult {
   const stage5 = deriveDates(current, options.referenceDate);
   apply(stage5.issues);
 
+  // Stage 6: one status per path, from its kind, its evidence and the gate. Only warnings
+  // come out of it, so nothing is removed here and a warning never changes a status.
+  const stage6 = deriveStatuses(current, gate);
+  apply(stage6.issues);
+
   return {
     model: {
       case: current,
       origin: options.origin,
       referenceDate: options.referenceDate,
       gate,
-      paths: {},
+      paths: stage6.paths,
       dates: stage5.dates,
       excluded,
     },
