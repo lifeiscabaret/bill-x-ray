@@ -17,6 +17,7 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  sessionStorage.clear(); // the form keeps its state for the browser session (scan-screen 8.3)
 });
 
 // ---- Helpers ----
@@ -337,7 +338,7 @@ function version(id: string, change: Partial<VersionRow> = {}): VersionRow {
 function sampleState(): FormState {
   const v1 = version("v1", { label: "Draft", dates: [{ ...newDate("d3"), kind: "introduced", date: "2026-01-02" }], clauses: [{ ...newClause("c4"), anchor: "Sec. 1", excerpt: "one two" }], pastedText: "one two three" });
   const v2 = version("v2", { documentNumber: "Number B", language: "", sourceKind: "news", factSentence: "A sentence.", pastedText: "ignored", clauses: [{ ...newClause("c5"), anchor: "Para 2", excerpt: "must not travel" }] });
-  return { bill: { jurisdiction: " XX ", session: "", number: " Number A " }, versions: [v1, v2], counter: 5 };
+  return { ...emptyForm(), bill: { jurisdiction: " XX ", session: "", number: " Number A " }, versions: [v1, v2], counter: 5 };
 }
 
 describe("toCaseInput", () => {
@@ -408,7 +409,7 @@ describe("toCaseInput", () => {
           dates: v.dates.map((d) => ({ ...d, id: `d${++n}` })),
           clauses: v.clauses.map((c) => ({ ...c, id: `c${++n}` })),
         }));
-        const { input, fields } = toCaseInput({ bill: s.bill, versions, counter: n });
+        const { input, fields } = toCaseInput({ ...emptyForm(), bill: s.bill, versions, counter: n });
         const parsed = parseCase(input, { referenceDate: REFERENCE, origin: "user" });
         expect(parsed.model).not.toBeNull();
         for (const issue of parsed.issues) expect(fieldFor(fields, issue.path), JSON.stringify(issue.path)).not.toBeNull();

@@ -1,113 +1,48 @@
-// "Scan your own bill" (scan-screen 7): the bill, its versions and their clauses, typed in by
-// hand. The form builds contract input with `toCaseInput`, parses it with origin "user" and
-// shows every contract issue next to the field its JSON path points to. It decides nothing about
-// a link and has no control that marks one confirmed (D-009). The scan below it is the same
-// ScanView the samples use.
+// "Scan your own bill": the bill, its versions and their clauses, the two texts to compare, the
+// links and the promise, typed in by hand, started from a sample or imported from a JSON file.
+// The form builds contract input with `toCaseInput`, parses it with origin "user" and shows every
+// contract issue next to the field its JSON path points to. It decides nothing about a link and
+// has no control that marks one confirmed (D-009). The scan below it is the same ScanView the
+// samples use, with the difference between the two chosen texts in its comparison strip.
 //
-// Sections 4 to 6 (compare, links, promise), JSON import and the session copy are scan-screen 8.
-import { useEffect, useId, useMemo, useState } from "react";
-import { parseCase, type Issue } from "../../contract";
+// The state lives in `sessionStorage` under "billxray.own" and is sent nowhere (scan-screen 8.3).
+import { useEffect, useId, useMemo, useState, type ChangeEvent } from "react";
+import { formatPath, parseCase, type Issue } from "../../contract";
 import { t } from "../../i18n/t";
+import { DiffText } from "../DiffText";
 import { ErrorBoundary } from "../ErrorBoundary";
 import { ScanView } from "../ScanView";
+import { SAMPLE_MODE_KEY, type Sample } from "../samples";
+import { CompareSection, optionName } from "./CompareSection";
+import { LinksSection } from "./LinksSection";
+import { PromiseSection } from "./PromiseSection";
+import { Issues, RowButton, SelectField, TextField, versionName } from "./fields";
+import { pickCompare } from "./compareChoice";
+import { importCase, type ImportNote } from "./importCase";
 import {
-  BILL_FIELDS, DATE_KINDS, SOURCE_KIND_CHOICES, emptyForm, fieldDomId, fieldFor, isNews, newClause, newDate, newVersion,
-  rowDomId, toCaseInput, type ClauseRow, type DateRow, type FormState, type SourceKind, type VersionRow,
+  BILL_FIELDS, DATE_KINDS, SOURCE_KIND_CHOICES, carriedChecks, emptyForm, fieldDomId, fieldFor, fromCase, isNews, newClause,
+  newDate, newVersion, restoreForm, rowDomId, toCaseInput, withoutRows,
+  type ClauseRow, type DateRow, type FormState, type SourceKind, type VersionRow,
 } from "./toCaseInput";
 
-// ---- Small pieces ----
+export const SESSION_KEY = "billxray.own";
 
-/** The messages of one field or row: severity in words, then the sentence for the code. */
-function Issues({ id, issues }: { id: string; issues: readonly Issue[] }) {
-  if (issues.length === 0) return null;
-  return (
-    <ul id={`${id}-issues`} className="form__issues">
-      {issues.map((i, n) => (
-        <li key={n} className={`form__issue form__issue--${i.severity}`}>
-          <strong>{t(`form.severity.${i.severity}`)}</strong> {t(`issue.${i.code}`, i.params)}
-        </li>
-      ))}
-    </ul>
-  );
+/** The form as kept for this browser session, or an empty one. */
+function readSession(): FormState {
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    return (raw === null ? null : restoreForm(JSON.parse(raw))) ?? emptyForm();
+  } catch {
+    return emptyForm();
+  }
 }
 
-const describedBy = (id: string, hint: string | undefined, issues: readonly Issue[]) =>
-  [hint ? `${id}-hint` : "", issues.length > 0 ? `${id}-issues` : ""].filter(Boolean).join(" ") || undefined;
-const invalid = (issues: readonly Issue[]) => (issues.some((i) => i.severity === "block") ? true : undefined);
-
-interface TextFieldProps {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  issues: readonly Issue[];
-  hint?: string;
-  multiline?: boolean;
-}
-
-function TextField({ id, label, value, onChange, issues, hint, multiline }: TextFieldProps) {
-  const aria = { "aria-describedby": describedBy(id, hint, issues), "aria-invalid": invalid(issues) };
-  return (
-    <div className="form__field">
-      <label htmlFor={id}>{label}</label>
-      {hint ? (
-        <p id={`${id}-hint`} className="form__hint">
-          {hint}
-        </p>
-      ) : null}
-      {multiline ? (
-        <textarea id={id} rows={4} value={value} spellCheck={false} onChange={(e) => onChange(e.target.value)} {...aria} />
-      ) : (
-        <input id={id} type="text" value={value} spellCheck={false} onChange={(e) => onChange(e.target.value)} {...aria} />
-      )}
-      <Issues id={id} issues={issues} />
-    </div>
-  );
-}
-
-interface SelectFieldProps {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  issues: readonly Issue[];
-  /** Value and visible text of each option, after an optional empty first option. */
-  options: readonly { value: string; text: string }[];
-}
-
-function SelectField({ id, label, value, onChange, issues, options }: SelectFieldProps) {
-  return (
-    <div className="form__field">
-      <label htmlFor={id}>{label}</label>
-      <select
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-describedby={describedBy(id, undefined, issues)}
-        aria-invalid={invalid(issues)}
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.text}
-          </option>
-        ))}
-      </select>
-      <Issues id={id} issues={issues} />
-    </div>
-  );
-}
-
-/** A button whose visible text is short and whose full name says which row it belongs to. */
-function RowButton({ id, text, row, onClick }: { id?: string; text: string; row: string; onClick: () => void }) {
-  return (
-    <button type="button" id={id} onClick={onClick}>
-      {text}{" "}
-      <span className="sr-only">{row}</span>
-    </button>
-  );
-}
-
-// ---- The form ----
+/** What the last "Import JSON" did, shown above the form. */
+type ImportState =
+  | { kind: "none" }
+  | { kind: "not_json" }
+  | { kind: "unusable"; issues: readonly Issue[] }
+  | { kind: "done"; notes: readonly ImportNote[] };
 
 const SOURCE_OPTIONS = SOURCE_KIND_CHOICES.map((k) => ({ value: k, text: t(`form.sourceKindOption.${k}`) }));
 const DATE_KIND_OPTIONS = [
@@ -115,17 +50,36 @@ const DATE_KIND_OPTIONS = [
   ...DATE_KINDS.map((k) => ({ value: k, text: t(`dateKind.${k}`) })),
 ];
 
-export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
-  const [state, setState] = useState<FormState>(emptyForm);
+export function OwnBillForm({ referenceDate, samples = [] }: { referenceDate: string; samples?: readonly Sample[] }) {
+  const [state, setState] = useState<FormState>(readSession);
+  const [imported, setImported] = useState<ImportState>({ kind: "none" });
   const [focusId, setFocusId] = useState<string | null>(null);
   const headingId = useId();
+
+  // The form is kept for this browser session only. shortcut: a browser that refuses storage
+  // (private mode, a full quota) just does not keep it; nothing else changes.
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    } catch {
+      /* not kept */
+    }
+  }, [state]);
+
+  // Only a form started from a sample, and only for rows still unchanged, has checks: they come
+  // from the loaded sample itself, never from what is stored in the session (D-009).
+  const carried = useMemo(() => {
+    const model = samples.find((s) => s.caseId === state.copiedFrom)?.model;
+    return model ? carriedChecks(model.case) : [];
+  }, [samples, state.copiedFrom]);
 
   // Every change is parsed again; parseCase never throws for any JSON value.
   const { fields, parsed } = useMemo(() => {
     const built = toCaseInput(state);
-    return { fields: built.fields, parsed: parseCase(built.input, { referenceDate, origin: "user" }) };
-  }, [state, referenceDate]);
+    return { fields: built.fields, parsed: parseCase(built.input, { referenceDate, origin: "user", bundledChecks: carried }) };
+  }, [state, referenceDate, carried]);
 
+  const notes = imported.kind === "done" ? imported.notes : [];
   const { byField, unplaced, leftOut } = useMemo(() => {
     const byField = new Map<string, Issue[]>();
     const unplaced: Issue[] = [];
@@ -134,6 +88,8 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
       if (id === null) unplaced.push(issue);
       else byField.set(id, [...(byField.get(id) ?? []), issue]);
     }
+    // The warnings the import kept (a saved check record that was ignored) sit next to their rows.
+    for (const note of notes) if (note.fieldId !== null) byField.set(note.fieldId, [...(byField.get(note.fieldId) ?? []), note.issue]);
     // A record with a block issue is out of the scan; its row says so.
     const leftOut = new Set<string>();
     for (const e of parsed.model?.excluded ?? []) {
@@ -141,7 +97,7 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
       if (id !== null) leftOut.add(id);
     }
     return { byField, unplaced, leftOut };
-  }, [parsed, fields]);
+  }, [parsed, fields, notes]);
   const issuesOf = (id: string): readonly Issue[] => byField.get(id) ?? [];
 
   // After an action that removes or moves the focused button, focus goes to a named element.
@@ -160,7 +116,9 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
     setFocusId(fieldDomId(id, "label"));
   };
   const removeVersion = (id: string) => {
-    setState((s) => ({ ...s, versions: s.versions.filter((v) => v.id !== id) }));
+    // The version, its clauses and every link end that pointed at them go together.
+    const gone = [id, ...(state.versions.find((v) => v.id === id)?.clauses.map((c) => c.id) ?? [])];
+    setState((s) => withoutRows({ ...s, versions: s.versions.filter((v) => v.id !== id) }, gone));
     setFocusId("own-add-version");
   };
   const moveVersion = (id: string, by: -1 | 1, button: string) => {
@@ -197,14 +155,57 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
   const changeClause = (v: VersionRow, id: string, change: Partial<ClauseRow>) =>
     setVersion(v.id, (x) => ({ ...x, clauses: x.clauses.map((c) => (c.id === id ? { ...c, ...change } : c)) }));
   const removeClause = (v: VersionRow, id: string) => {
+    setState((s) => withoutRows(s, [id]));
     setVersion(v.id, (x) => ({ ...x, clauses: x.clauses.filter((c) => c.id !== id) }));
     setFocusId(fieldDomId(v.id, "add-clause"));
   };
 
-  const versionName = (v: VersionRow, n: number) =>
-    v.label.trim() === "" ? t("form.versionName", { n }) : t("form.versionNameWithLabel", { n, label: v.label.trim() });
+  // ---- Start from a sample, Import JSON ----
+
+  const startFrom = (sample: Sample) => {
+    if (sample.model === null) return;
+    setState({ ...fromCase(sample.model.case).state, copiedFrom: sample.caseId });
+    setImported({ kind: "none" });
+  };
+
+  const onFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = ""; // the same file can be chosen again
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onerror = () => setImported({ kind: "not_json" });
+    reader.onload = () => {
+      let value: unknown;
+      try {
+        value = JSON.parse(String(reader.result));
+      } catch {
+        setImported({ kind: "not_json" }); // nothing in the form changes
+        return;
+      }
+      const result = importCase(value, referenceDate);
+      if (!result.ok) {
+        setImported({ kind: "unusable", issues: result.issues });
+        return;
+      }
+      setState(result.state);
+      setImported({ kind: "done", notes: result.notes });
+    };
+    reader.readAsText(file);
+  };
+
   const model = parsed.model;
   const scanned = model !== null && model.case.documents.length > 0;
+  const compare = useMemo(() => pickCompare(state), [state.versions, state.compare]); // eslint-disable-line react-hooks/exhaustive-deps
+  const comparison =
+    compare.result && compare.a && compare.b ? (
+      <div className="compare-strip">
+        <h4>{t("form.diffCaption", { a: optionName(compare.a), b: optionName(compare.b) })}</h4>
+        <DiffText result={compare.result} lang={compare.a.lang} />
+      </div>
+    ) : null;
+  const leftOutNotes = notes.filter((n) => n.fieldId === null);
+  const section = (key: string) => `${headingId}-${key}`;
+  const sectionProps = { state, setState, issuesOf, leftOut, focus: setFocusId };
 
   return (
     <section className="own-form" aria-labelledby={headingId}>
@@ -217,8 +218,67 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
         </div>
       ) : null}
 
-      <section className="form__section" aria-labelledby={`${headingId}-bill`}>
-        <h3 id={`${headingId}-bill`}>{t("form.billHeading")}</h3>
+      <section className="form__section" aria-labelledby={section("start")}>
+        <h3 id={section("start")}>{t("form.startHeading")}</h3>
+        <p className="form__hint">{t("form.startHint")}</p>
+        {samples.some((s) => s.model !== null && !s.blocked) ? (
+          <div className="form__buttons">
+            {samples.flatMap((s) =>
+              s.model !== null && !s.blocked ? [
+                <button key={s.caseId} type="button" onClick={() => startFrom(s)}>
+                  {t("form.startFrom", { name: t(SAMPLE_MODE_KEY[s.caseId]) })}
+                </button>,
+              ] : [],
+            )}
+          </div>
+        ) : null}
+        <div className="form__field">
+          <label htmlFor="own-import">{t("form.importJson")}</label>
+          <p id="own-import-hint" className="form__hint">{t("form.importHint")}</p>
+          <input
+            id="own-import"
+            type="file"
+            accept=".json,application/json"
+            onChange={onFile}
+            aria-describedby={imported.kind === "not_json" ? "own-import-hint own-import-issues" : "own-import-hint"}
+            aria-invalid={imported.kind === "not_json" ? true : undefined}
+          />
+          {imported.kind === "not_json" ? (
+            <p id="own-import-issues" role="alert" className="form__issue form__issue--block">
+              <strong>{t("form.severity.block")}</strong> {t("issue.import_not_json")}
+            </p>
+          ) : null}
+          {imported.kind === "unusable" ? (
+            <div id="own-import-issues" role="alert">
+              <p>{t("form.importUnusable")}</p>
+              <ul className="form__issues">
+                {imported.issues.map((i, n) => (
+                  <li key={n} className={`form__issue form__issue--${i.severity}`}>
+                    {`${formatPath(i.path)}: ${t(`issue.${i.code}`, i.params)}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {imported.kind === "done" ? <p role="status">{t("form.importDone")}</p> : null}
+          {leftOutNotes.length > 0 ? (
+            <div className="form__unplaced">
+              <h4>{t("form.importLeftOut")}</h4>
+              <ul className="form__issues">
+                {leftOutNotes.map((n, k) => (
+                  <li key={k} className={`form__issue form__issue--${n.issue.severity}`}>
+                    <strong>{t(`form.severity.${n.issue.severity}`)}</strong>{" "}
+                    {`${formatPath(n.issue.path)}: ${t(`issue.${n.issue.code}`, n.issue.params)}`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="form__section" aria-labelledby={section("bill")}>
+        <h3 id={section("bill")}>{t("form.billHeading")}</h3>
         {BILL_FIELDS.map((f) => (
           <TextField
             key={f.id}
@@ -231,8 +291,8 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
         ))}
       </section>
 
-      <section className="form__section" aria-labelledby={`${headingId}-versions`}>
-        <h3 id={`${headingId}-versions`}>{t("form.versionsHeading")}</h3>
+      <section className="form__section" aria-labelledby={section("versions")}>
+        <h3 id={section("versions")}>{t("form.versionsHeading")}</h3>
         {state.versions.length === 0 ? <p>{t("form.noVersions")}</p> : null}
         <ol className="form__rows">
           {state.versions.map((v, index) => {
@@ -290,8 +350,8 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
       </section>
 
       {state.versions.length > 0 ? (
-        <section className="form__section" aria-labelledby={`${headingId}-clauses`}>
-          <h3 id={`${headingId}-clauses`}>{t("form.clausesHeading")}</h3>
+        <section className="form__section" aria-labelledby={section("clauses")}>
+          <h3 id={section("clauses")}>{t("form.clausesHeading")}</h3>
           {state.versions.map((v, index) => {
             const n = index + 1;
             const news = isNews(v);
@@ -323,12 +383,36 @@ export function OwnBillForm({ referenceDate }: { referenceDate: string }) {
         </section>
       ) : null}
 
-      <section className="form__section" aria-labelledby={`${headingId}-scan`}>
-        <h3 id={`${headingId}-scan`}>{t("form.scanHeading")}</h3>
+      {state.versions.length > 0 ? (
+        <>
+          <section className="form__section" aria-labelledby={section("compare")}>
+            <h3 id={section("compare")}>{t("form.compareHeading")}</h3>
+            <CompareSection {...sectionProps} />
+          </section>
+          <section className="form__section" aria-labelledby={section("links")}>
+            <h3 id={section("links")}>{t("form.linksHeading")}</h3>
+            <LinksSection {...sectionProps} />
+          </section>
+        </>
+      ) : null}
+
+      <section className="form__section" aria-labelledby={section("promise")}>
+        <h3 id={section("promise")}>{t("form.promiseHeading")}</h3>
+        <PromiseSection {...sectionProps} />
+      </section>
+
+      <section className="form__section" aria-labelledby={section("scan")}>
+        <h3 id={section("scan")}>{t("form.scanHeading")}</h3>
         {scanned ? (
-          <ErrorBoundary key={model.case.documents.length}>
-            <ScanView key={model.case.documents.length} model={model} />
-          </ErrorBoundary>
+          <>
+            <p className="form__banner" role="note">
+              {t("form.banner")}
+              {state.copiedFrom !== null ? ` ${t("form.bannerCopied")}` : ""}
+            </p>
+            <ErrorBoundary key={model.case.documents.length}>
+              <ScanView key={model.case.documents.length} model={model} comparison={comparison} />
+            </ErrorBoundary>
+          </>
         ) : (
           <p>{t("form.nothingToScan")}</p>
         )}

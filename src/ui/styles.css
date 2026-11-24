@@ -533,3 +533,30 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+/* ---- Scan your own bill: start, compare, links, promise, banner (scan-screen 8) ---- */
+.form__section > .form__buttons > button {
+  min-height: 44px;
+  padding: 4px 14px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.form__unplaced {
+  max-width: 720px;
+  margin: 8px 0;
+}
+.form__banner {
+  max-width: 720px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  font-weight: 700;
+  border: 2px dotted var(--ink);
+  border-radius: 4px;
+}
+.compare-strip h4 {
+  margin: 0 0 6px;
+}

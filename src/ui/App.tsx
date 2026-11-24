@@ -60,7 +60,7 @@ export function App({ modules = bundledModules, referenceDate }: AppProps) {
         </button>
       </div>
       {sample === undefined ? (
-        <OwnBillForm referenceDate={today} />
+        <OwnBillForm referenceDate={today} samples={samples} />
       ) : sample.blocked || sample.model === null ? (
         <IssueList key={sample.caseId} issues={sample.issues} />
       ) : (
