@@ -10,7 +10,7 @@ import type { LayoutConnector, LayoutNode, Orientation, ScanLayout } from "./lay
  */
 export const SCALE: Record<Orientation, { x: number; y: number }> = {
   horizontal: { x: 1.85, y: 1.5 },
-  vertical: { x: 1.25, y: 1.6 },
+  vertical: { x: 1.2, y: 1.6 }, // three lanes (272 units) come to 326 px: inside 360 px less 2 x 16 px padding
 };
 
 /** Node box in pixels. Fixed, so an end marker can sit just outside the box without measuring. */

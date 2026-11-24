@@ -10,10 +10,11 @@ import { NodeLayer, type Selection } from "./NodeLayer";
 import { NotDrawnList } from "./NotDrawnList";
 import { Scanner } from "./Scanner";
 import { layoutScan, type Orientation } from "./layout";
+import { useOrientation } from "./useOrientation";
 
 export interface ScanViewProps {
   model: ScanModel;
-  /** Task 9 picks it from the screen width; until then the wide layout. */
+  /** Forces an orientation; by default it follows the screen width (`useOrientation`, D-014). */
   orientation?: Orientation;
   /** Where the comparison strip of "Scan your own bill" goes (scan-screen 8). */
   comparison?: ReactNode;
@@ -23,7 +24,9 @@ export const GLIDE_MS = 400;
 
 const reducedMotion = () => document.documentElement.dataset.motion === "reduce";
 
-export function ScanView({ model, orientation = "horizontal", comparison }: ScanViewProps) {
+export function ScanView({ model, orientation: forced, comparison }: ScanViewProps) {
+  const detected = useOrientation();
+  const orientation = forced ?? detected;
   const columns = model.case.documents.length;
   // `value` is what the slider shows (a whole number); `shown` is what the layout draws. They
   // are equal except while a button's 400 ms glide is under way.
@@ -94,9 +97,11 @@ export function ScanView({ model, orientation = "horizontal", comparison }: Scan
       <div className="scan-view__main" onKeyDown={onKeyDown}>
         <Scanner value={value} versionNames={versionNames} onJump={jump} onGlide={glide} />
         {comparison ? <div className="scan-view__comparison">{comparison}</div> : null}
-        <div className="scan-box" data-scanned={String(Math.round(shown * 100) / 100)} style={{ width, height }}>
-          <ConnectorLayer layout={layout} />
-          <NodeLayer model={model} layout={layout} onSelect={setSelection} />
+        <div className="scan-scroll">
+          <div className="scan-box" data-scanned={String(Math.round(shown * 100) / 100)} style={{ width, height }}>
+            <ConnectorLayer layout={layout} />
+            <NodeLayer model={model} layout={layout} onSelect={setSelection} />
+          </div>
         </div>
         <NotDrawnList model={model} onSelect={setSelection} />
       </div>

@@ -293,7 +293,8 @@
   gap: 16px;
   align-items: start;
 }
-@media (min-width: 720px) {
+/* Scan-screen 9 moves the side-by-side placement from 720 px to 1024 px: see the block at the end. */
+@media (min-width: 1024px) {
   .scan-view:has(> .panel) {
     grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
   }
@@ -559,4 +560,41 @@
 }
 .compare-strip h4 {
   margin: 0 0 6px;
+}
+
+/* ---- Narrow screens, touch targets and reduced motion (scan-screen 9) ---- */
+/* The scan keeps its own size (the vertical one is 326 px for three lanes). A scan wider than
+   the page, for example four or more lanes at 360 px, or three versions between 720 and 880 px,
+   scrolls inside this box and never makes the page scroll sideways. */
+.scan-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+/* The scan turns vertical below 720 px (useOrientation, D-014). The evidence panel sits under
+   the scan below 1024 px and beside it from there (rule in the scan view block above).
+   Every button, label and link is at least 44 px high. */
+.label,
+.panel__link {
+  min-height: 44px;
+}
+.label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.panel__link {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Reduced motion: the setting of the operating system and the in-app toggle both set
+   data-motion="reduce" on <html> (main.tsx, App.tsx). Under it nothing transitions or
+   animates, whatever a rule above or below asks for. Keep this the last block of the file;
+   a test (tests/ui/motion.test.ts) fails when any other rule can still move under it. */
+:root[data-motion="reduce"] *,
+:root[data-motion="reduce"] *::before,
+:root[data-motion="reduce"] *::after {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
 }

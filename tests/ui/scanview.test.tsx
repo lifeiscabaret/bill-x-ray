@@ -375,7 +375,9 @@ describe("scan view: order and slots", () => {
     const view = render(<ScanView model={model()} comparison={<p>Synthetic strip</p>} />);
     const strip = view.container.querySelector(".scan-view__comparison")!;
     expect(strip.textContent).toBe("Synthetic strip");
-    expect(strip.nextElementSibling?.classList.contains("scan-box")).toBe(true);
+    // the scan box sits in its scroll box (scan-screen 9), which is what follows the strip
+    expect(strip.nextElementSibling?.classList.contains("scan-scroll")).toBe(true);
+    expect(strip.nextElementSibling?.firstElementChild?.classList.contains("scan-box")).toBe(true);
     expect(strip.previousElementSibling?.classList.contains("scanner")).toBe(true);
   });
 

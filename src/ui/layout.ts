@@ -212,6 +212,7 @@ export function layoutScan(model: ScanModel, options: LayoutOptions): ScanLayout
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const connectors: LayoutConnector[] = [];
   const labels: LayoutLabel[] = [];
+  const takenSpots: Spot[] = [];
   for (const { path, from, to } of placed) {
     const a = byId.get(from.id)!;
     const b = byId.get(to.id)!;
@@ -227,13 +228,13 @@ export function layoutScan(model: ScanModel, options: LayoutOptions): ScanLayout
     });
     const params: Record<string, string> = {};
     if (path.kind === "successor_document") params.documentId = documentIdOf(path.to, evidenceById);
+    const spot = labelSpot(a, b, takenSpots);
     labels.push({
       pathId: path.pathId,
       kindKey: `kind.${path.kind}`,
       statusKey: status === "confirmed" ? null : `status.${status}`,
       params,
-      x: round2((a.x + b.x) / 2),
-      y: round2((a.y + b.y) / 2),
+      ...at(spot.column, spot.laneOffset),
     });
   }
 
@@ -256,6 +257,57 @@ function documentIdOf(e: Endpoint, evidenceById: Map<string, { documentId: strin
   if (e.type === "version") return e.documentId;
   if (e.type === "clause") return evidenceById.get(e.evidenceId)?.documentId ?? "";
   return "";
+}
+
+/** A label's place on its line: a column position (a gap centre, k + 0.5) and a lane offset. */
+interface Spot {
+  column: number;
+  laneOffset: number;
+}
+
+// Where a path's label sits. A label in the middle of a line that skips a column would land on
+// that column's version node, and at scanner 0 every line shares lane 0, so labels would also
+// pile up. So a label goes to the centre of a gap between two columns (never on a node), the
+// gap nearest the middle of the line that no earlier label on the same lane already uses, and
+// at the lane height the curve has there. A line inside one column keeps its midpoint.
+// shortcut: when every gap along a line is taken, the nearest gap is shared and the labels can
+// overlap; spread them across the lane when a real case needs it.
+function labelSpot(a: LayoutNode, b: LayoutNode, taken: Spot[]): Spot {
+  const ca = a.column;
+  const cb = b.column;
+  if (ca === cb) return { column: ca, laneOffset: round2((a.laneOffset + b.laneOffset) / 2) };
+  const lo = Math.min(ca, cb);
+  const mid = (ca + cb) / 2;
+  const gaps = Array.from({ length: Math.abs(cb - ca) }, (_, i) => lo + i + 0.5).sort(
+    (p, q) => Math.abs(p - mid) - Math.abs(q - mid) || q - p, // nearest first, the later gap on a tie
+  );
+  const spotAt = (g: number): Spot => ({ column: g, laneOffset: round2(laneAtColumn(a, b, g)) });
+  const free = (s: Spot) => !taken.some((t) => t.column === s.column && Math.abs(t.laneOffset - s.laneOffset) < 1);
+  const spots = gaps.map(spotAt);
+  const spot = spots.find(free) ?? spots[0]!;
+  taken.push(spot);
+  return spot;
+}
+
+// The lane offset of the curve `curve()` draws, where it passes column `g`. The curve is a cubic
+// whose control points sit halfway along the reading direction: across it eases from one end to
+// the other (3u² - 2u³), along it follows the Bézier x(u); the parameter u is found by bisection.
+function laneAtColumn(a: LayoutNode, b: LayoutNode, g: number): number {
+  const m = (a.column + b.column) / 2;
+  const along = (u: number) => {
+    const v = 1 - u;
+    return a.column * v ** 3 + 3 * m * v * v * u + 3 * m * v * u * u + b.column * u ** 3;
+  };
+  const rising = b.column > a.column;
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 30; i++) {
+    const mu = (lo + hi) / 2;
+    if ((along(mu) < g) === rising) lo = mu;
+    else hi = mu;
+  }
+  const u = (lo + hi) / 2;
+  return a.laneOffset + (b.laneOffset - a.laneOffset) * (3 * u * u - 2 * u ** 3);
 }
 
 // A straight line when both ends share the cross coordinate, else an S-curve whose control
