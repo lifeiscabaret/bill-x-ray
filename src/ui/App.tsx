@@ -1,11 +1,12 @@
 // App shell (scan-screen 6.1): the heading and tagline, the mode switcher (first in tab order),
 // the "Reduce motion" toggle, and one scan view for the chosen sample. It decides nothing about
 // a case: it loads the samples, shows what `parseCase` returned and leaves the rest to ScanView.
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { t } from "../i18n/t";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IssueList } from "./IssueList";
 import { ScanView } from "./ScanView";
+import { OwnBillForm } from "./form/OwnBillForm";
 import { SAMPLE_MODE_KEY, bundledModules, loadSamples, type RawModules, type SampleId } from "./samples";
 
 type Mode = SampleId | "own";
@@ -29,7 +30,6 @@ export function App({ modules = bundledModules, referenceDate }: AppProps) {
   // With no sample the app opens on "Scan your own bill" (D-020, D-015).
   const [mode, setMode] = useState<Mode>(() => samples[0]?.caseId ?? "own");
   const [reduce, setReduce] = useState(() => document.documentElement.dataset.motion === "reduce");
-  const ownId = useId();
 
   // `data-motion` on the root element is what the scanner and the stylesheet read.
   useEffect(() => {
@@ -60,10 +60,7 @@ export function App({ modules = bundledModules, referenceDate }: AppProps) {
         </button>
       </div>
       {sample === undefined ? (
-        // The form arrives in scan-screen 7.
-        <section aria-labelledby={ownId}>
-          <h2 id={ownId}>{t("mode.own")}</h2>
-        </section>
+        <OwnBillForm referenceDate={today} />
       ) : sample.blocked || sample.model === null ? (
         <IssueList key={sample.caseId} issues={sample.issues} />
       ) : (

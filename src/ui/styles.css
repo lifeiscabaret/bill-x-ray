@@ -431,3 +431,105 @@
   border: 2px solid var(--ink);
   border-radius: 4px;
 }
+
+/* ---- Scan your own bill: form (scan-screen 7) ---- */
+.own-form h3 {
+  margin: 20px 0 8px;
+  font-size: 20px;
+}
+.own-form h4 {
+  margin: 16px 0 6px;
+  font-size: 16px;
+}
+.form__section {
+  margin-bottom: 16px;
+}
+.form__rows {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+.form__row {
+  box-sizing: border-box;
+  max-width: 720px;
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 8px 12px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+}
+.form__row--inner {
+  padding: 8px 12px;
+  border-width: 1px;
+  border-style: solid;
+}
+.form__row legend {
+  padding: 0 6px;
+  font-weight: 700;
+}
+.form__field {
+  max-width: 640px;
+  margin: 0 0 10px;
+}
+.form__field label {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.form__field input,
+.form__field select,
+.form__field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+}
+/* A field with a block message gets a dashed, thicker border: the message says so too, colour is extra. */
+.form__field [aria-invalid="true"] {
+  border-style: dashed;
+  border-width: 3px;
+}
+.form__hint {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.form__issues {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.form__issue {
+  margin: 2px 0;
+  padding-left: 8px;
+  border-left: 4px solid var(--ink);
+}
+.form__issue--warn {
+  border-left-style: dotted;
+}
+.form__left-out {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+.form__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+.form__row button,
+.form__section > button {
+  min-height: 44px;
+  padding: 4px 14px;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  cursor: pointer;
+}

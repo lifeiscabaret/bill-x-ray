@@ -243,10 +243,13 @@ describe("strings and sources", () => {
   it("has no branch on jurisdiction and no case content in src/ui/", () => {
     expect(ui.length).toBeGreaterThan(8);
     const stripped = (code: string) => SAMPLE_IDS.reduce((s, id) => s.replaceAll(id, ""), code);
+    // The one file that may write the word: it names the contract's `jurisdiction` field when the
+    // form state becomes contract input (scan-screen 7.2). The next test shows it never branches on it.
+    const writesField = (f: string) => /[\\/]form[\\/]toCaseInput\.ts$/.test(f);
     const bad = ui.flatMap(({ f, code }) => {
       const c = stripped(code);
       const hits = [
-        /jurisdiction/i.test(c) && "jurisdiction",
+        !writesField(f) && /jurisdiction/i.test(c) && "jurisdiction",
         /\b(?:H\.R\.|S\.)\s?\d{2,}/.test(c) && "bill number",
         /\bP\.L\.\s?\d/.test(c) && "public law number",
         /hr748|2205453|2215103|21337|116-94|116-136/.test(c) && "case number",
@@ -255,6 +258,13 @@ describe("strings and sources", () => {
       return hits.map((h) => `${f}: ${String(h)}`);
     });
     expect(bad).toEqual([]);
+  });
+
+  it("toCaseInput.ts only copies the jurisdiction field: it is never compared or switched on", () => {
+    const code = noComments(ui.find(({ f }) => /[\\/]form[\\/]toCaseInput\.ts$/.test(f))!.code);
+    const uses = code.split("\n").filter((line) => /jurisdiction/i.test(line));
+    expect(uses.length).toBeGreaterThan(0);
+    for (const line of uses) expect(line).not.toMatch(/[=!]==?|switch|\?|\bif\b|\bcase\b|\.includes\(/);
   });
 
   it("imports the case files in one place only, as raw text", () => {
