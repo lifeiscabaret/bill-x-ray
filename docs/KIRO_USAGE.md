@@ -22,9 +22,11 @@ that was not used says "not used". Nothing here is claimed for something that wa
 - No demo case is loaded. `data/cases/` and `data/verification/` hold only placeholders,
   because the two evidence rechecks that the loading gate needs are done by people and are
   still pending (`docs/HANDOFF.md`).
-- Application code was written by Kiro Crew worker chats, one chat per top-level task of
-  the two task lists (`.kiro/specs/data-contract/tasks.md`,
-  `.kiro/specs/scan-screen/tasks.md`). Each commit subject names its task, for example
+- Application code was written by Kiro Crew worker chats. Each top-level task of the two
+  task lists went to a worker chat, and a few chats also took a follow-up fix or the next
+  task (the scan-screen 5 chat also did scan-screen 6, for example). The task lists are
+  `.kiro/specs/data-contract/tasks.md` and `.kiro/specs/scan-screen/tasks.md`. Each commit
+  subject names its task, for example
   "(data-contract 6)". The repository does not record which Kiro app wrote each file. The
   Kiro Crew chats are recorded in the work ledger, chat history and task reports described
   below.
@@ -36,7 +38,7 @@ that was not used says "not used". Nothing here is claimed for something that wa
 | Kiro Crew | Used. Its chats are driven through Kiro CLI | The Kiro Crew section below; the commits listed there |
 | Kiro IDE | No record of use. Local Kiro IDE logs on the machine used hold no mention of this repository or of its hooks | Nothing in the repository; see "Agent hooks" |
 | Kiro CLI directly, Kiro Web | No separate record | None |
-| Custom agents | Not used | No agent definition exists under `.kiro/` |
+| Custom agents | Not used for this project. The Kiro Crew chats ran on agents that come with Kiro Crew (its conductor and worker agents), none of them defined in this repository | No agent definition exists under `.kiro/` |
 | Agent hooks | Four hooks defined, all command actions. Defined, run not confirmed | `.kiro/hooks/*.json`; see "Agent hooks" |
 | Spec-driven development | Used. Three specs: all have requirements, two have a design and a task list | `.kiro/specs/`; see "Spec-driven development" |
 | Steering docs | Used. Seven steering files | `.kiro/steering/`; see "Steering docs" |
@@ -181,14 +183,14 @@ the change to a GitHub noreply address, the first merge, the README edits (now i
 and the writing of both design drafts.
 
 **Phase 2, from the next request on 2026-11-23.**
-- A conductor chat split each request into tasks and sent each task to its own worker chat.
+- A conductor chat split each request into tasks and sent each task to a worker chat.
 - Worker chats reported to a work ledger.
 - Before the product owner was asked to approve, the conductor re-ran read-only checks:
   remote and local commits, changed files and the pre-push scan.
 - The product owner pushed every time personally. No worker pushed.
 
 **Phase 3, 2026-11-24: implementation.** Each top-level task of the two task lists went to
-its own worker chat. A worker chat wrote the code and its tests, ran the checks and wrote a
+a worker chat, and a few chats also took a follow-up fix or the next task. A worker chat wrote the code and its tests, ran the checks and wrote a
 task report. Several reports record a test that was first shown to fail on a deliberate
 break and to pass again after the break was reverted. No worker pushed.
 
@@ -251,7 +253,7 @@ by unit:
 | Steering | `.kiro/steering/*.md` | `6ce6f06` `d22ca5d` `d942285` `07c5d35` `3259f93` `7605eb8` `13ca8e9` `b5ddbd9` |
 | Specs: requirements | `.kiro/specs/*/requirements.md` | `d942285` `07c5d35` `3259f93` `7605eb8` |
 | Specs: designs | `.kiro/specs/data-contract/design.md`, `.kiro/specs/scan-screen/design.md` | `2deea6d` `d0c9d28` `7605eb8` |
-| Specs: task lists | `.kiro/specs/data-contract/tasks.md`, `.kiro/specs/scan-screen/tasks.md` | `ddd986e` |
+| Specs: task lists | `.kiro/specs/data-contract/tasks.md`, `.kiro/specs/scan-screen/tasks.md` | `ddd986e`, then the status commits after `174a9ce` |
 | Hooks, including the switch to command actions | `.kiro/hooks/*.json` | `6ce6f06` `d22ca5d` `7605eb8` `b5ddbd9` `69c411f` `09a58c1` |
 | Decisions D-001 to D-024 | `docs/DECISIONS.md` (D-001 to D-004 in `07c5d35`, D-005 to D-007 in `3259f93`, D-008 to D-015 in `d0c9d28`, D-016 and D-017 in `7605eb8`, D-018 to D-020 in `13ca8e9`; D-021 to D-024 in the commit that adds this revision). The file records each decision as approved and names no approver | `07c5d35` `3259f93` `d0c9d28` `7605eb8` `13ca8e9` |
 | App code: contract and comparison | `src/contract/`, `src/compare/` | `a97e5d5` `6f94080` `00e2547` `c765432` `3206054` `1dbac90` `09a58c1` `a40635a` `9d960d5` |
@@ -273,7 +275,9 @@ by unit:
 
 ## Not used
 
-- **Custom agents:** not used. No agent definition exists under `.kiro/`.
+- **Custom agents:** not used for this project. No agent definition exists under `.kiro/`.
+  The Kiro Crew chats ran on agents that come with Kiro Crew (its conductor and worker
+  agents), none of them defined in this repository.
 - **MCP:** not used in this repository. No MCP configuration exists under `.kiro/`.
 - **Kiro powers:** not used.
 - **Kiro IDE and Kiro Web:** no record of use (see "Agent hooks" and the Kiro Crew section).

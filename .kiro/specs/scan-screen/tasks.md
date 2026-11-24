@@ -1,6 +1,6 @@
 # Implementation Plan: scan-screen
 
-Approved by the product owner on 2026-11-24 (D-020). Nothing here is implemented yet.
+Approved by the product owner on 2026-11-24 (D-020). Status on 2026-11-24: a ticked box is done; `docs/HANDOFF.md` lists what is left.
 
 ## How to read this plan
 

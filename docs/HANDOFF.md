@@ -3,7 +3,7 @@
 For the two team members who take over Bill X-Ray (roles A and B, as in
 `.kiro/steering/product.md`). Feature work by the Kiro Crew chats stopped at the scan-screen
 9 wrap-up (D-022). This file says where things stand, what is left, and what waits on a
-person. Names of people do not appear in this repository: write a role or a GitHub account,
+person. Files in this repository name no people: write a role or a GitHub account,
 never a real name (D-023).
 
 ## Start here
@@ -101,8 +101,7 @@ What does not work or is not done:
 | 12 | Deploy runbook and release check (D-018) | done | `b1adbb3`, `4463b5a` | B | |
 
 Notes:
-- The checkboxes in the two task lists are current. The sentence at the top of each list, "Nothing
-  here is implemented yet.", dates from before the work and is out of date.
+- The checkboxes in the two task lists are current.
 - Task 12 is written and its commands passed on the tree at that time. Steps 12.3 and 12.4
   (README check for promise data, `dist/` check with cases in it) must be run again once real
   samples are in `data/cases/`.
