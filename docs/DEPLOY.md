@@ -127,7 +127,9 @@ who uploaded does not do it.
    $html -match "cloudflareinsights"
    ```
 
-   Both lines must print `False`.
+   Both lines must print `False`. If the fetch returns error 1010, Cloudflare has refused
+   a default automated client before the site ran. Add a descriptive `User-Agent` header
+   to the same command and fetch again. Never turn any Cloudflare check off.
 2. If either prints `True`, Cloudflare Web Analytics is adding a script. In the Cloudflare
    dashboard open **Web Analytics**, choose **Manage site** for this site, and set the
    automatic setup to **Disable**. Wait a few minutes.
@@ -160,9 +162,11 @@ tab:
 The site stays up until **2027-02-04 KST**. Fill in these two lines in the sign-off record
 before the first upload:
 
-- Opens the live address once a week and checks that it loads: ______ (role or name left
-  to the company)
-- Can take the site down, and has the company Cloudflare access to do it: ______
+- Opens the live address once a week and checks that it loads: ______ (role A or B)
+- Can take the site down, and has the company Cloudflare access to do it: ______ (role A
+  or B)
+
+A personal name may go only into a record the company keeps outside this repository.
 
 To take the site down, **(person)** open the company Cloudflare dashboard, go to
 **Workers & Pages**, select the Worker, open **Settings**, then **Domains & Routes**, and
@@ -189,4 +193,5 @@ keeps outside the repository. Each record has:
 - Step 6 result and the role of the person who checked.
 - Where the saved copy from step 3 is kept.
 
-Never put an account name, an email address, a key or a computer path in this record.
+Never put an account name, an email address, a key or a computer path in this record. In a
+record kept in this repository, never put a personal name either.
