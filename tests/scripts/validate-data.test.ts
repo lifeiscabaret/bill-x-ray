@@ -76,6 +76,8 @@ describe("validate:data on data", () => {
     ["the first role opened another page", (r) => ({ ...r, sourceUrl: "https://example.org/other" }), "first role did not open"],
     ["the second role opened another page", (r) => ({ ...r, confirm: { ...r.confirm!, url: "https://example.org/other" } }), "second role did not open"],
     ["the record names another case", (r) => ({ ...r, caseId: "fixture-other" }), "has no recheck record"],
+    ["the record's excerpt is not the row's excerpt", (r) => ({ ...r, excerpt: "Invented clause text. " }), "excerpt differs from the row's excerpt"],
+    ["the record's anchor is not the row's anchor", (r) => ({ ...r, anchor: "Sec. 2" }), "anchor differs from the row's anchor"],
   ];
   it.each(failures)("%s: exit 1", (_name, change, text) => {
     const { cases } = good();

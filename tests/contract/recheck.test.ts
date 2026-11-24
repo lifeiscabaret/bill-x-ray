@@ -167,11 +167,32 @@ describe("crossCheckRechecks (two roles, D-002 and D-006)", () => {
     ["there is no second part", (r) => ({ ...r, confirm: null }), ["confirm_missing"]],
     ["the second role's result is not matched", (r) => ({ ...r, confirm: { ...r.confirm!, result: "mismatch" } }), ["confirm_not_matched"]],
     ["the same role opened twice (A and A)", (r) => ({ ...r, confirm: { ...r.confirm!, by: "A" } }), ["same_role"]],
-    ["the same role opened twice (B and B)", (r) => ({ ...r, checkedBy: "B" }), ["same_role"]],
+    // the row says A checked it, so a record that says B is also a role mismatch
+    ["the same role opened twice (B and B)", (r) => ({ ...r, checkedBy: "B" }), ["same_role", "role_mismatch"]],
     ["the first role opened another page", (r) => ({ ...r, sourceUrl: "https://example.org/other" }), ["url_mismatch"]],
     ["the second role opened another page", (r) => ({ ...r, confirm: { ...r.confirm!, url: "https://example.org/other" } }), ["confirm_url_mismatch"]],
     ["the first role's URL differs only by a trailing slash", (r) => ({ ...r, sourceUrl: `${URL1}/` }), ["url_mismatch"]],
     ["two failures at once are two issues", (r) => ({ ...r, result: "mismatch", confirm: { ...r.confirm!, by: "A" } }), ["result_not_matched", "same_role"]],
+    // The record vouches for the row's exact words: plain string equality, nothing normalized.
+    ["the anchor differs", (r) => ({ ...r, anchor: "Sec. 2" }), ["anchor_mismatch"]],
+    ["the anchor differs by a trailing space", (r) => ({ ...r, anchor: "Sec. 1 " }), ["anchor_mismatch"]],
+    ["the anchor differs by case", (r) => ({ ...r, anchor: "sec. 1" }), ["anchor_mismatch"]],
+    ["the excerpt differs", (r) => ({ ...r, excerpt: "Another invented clause." }), ["excerpt_mismatch"]],
+    ["the excerpt differs by one doubled space", (r) => ({ ...r, excerpt: "Invented  clause text." }), ["excerpt_mismatch"]],
+    ["the excerpt differs by a no-break space", (r) => ({ ...r, excerpt: "Invented\u00A0clause text." }), ["excerpt_mismatch"]],
+    ["the excerpt is empty", (r) => ({ ...r, excerpt: "" }), ["excerpt_mismatch"]],
+    ["anchor and excerpt both differ, two issues in this order", (r) => ({ ...r, anchor: "x", excerpt: "y" }), ["anchor_mismatch", "excerpt_mismatch"]],
+  ];
+
+  // The row is changed instead of the record: roles and dates the row carries must be the record's.
+  const rowChanges: [string, (c: Case) => void, string[]][] = [
+    ["the row names another checking role", (c) => { c.evidence[0]!.check.checkedBy = "B"; }, ["role_mismatch"]],
+    ["the row names another confirming role", (c) => { c.evidence[0]!.check.confirmedBy = "A"; c.evidence[0]!.check.confirmedAt = "2026-11-24"; }, ["role_mismatch"]],
+    ["the row names another check date", (c) => { c.evidence[0]!.check.checkedAt = "2026-11-23"; }, ["date_mismatch"]],
+    ["the row names another confirm date", (c) => { c.evidence[0]!.check.confirmedBy = "B"; c.evidence[0]!.check.confirmedAt = "2026-11-23"; }, ["date_mismatch"]],
+    ["a role and a date both differ, role first", (c) => { c.evidence[0]!.check.checkedBy = "B"; c.evidence[0]!.check.checkedAt = "2026-11-23"; }, ["role_mismatch", "date_mismatch"]],
+    ["the row's excerpt was edited after the recheck", (c) => { c.evidence[0]!.excerpt = "Edited invented clause."; }, ["excerpt_mismatch"]],
+    ["the row's anchor was edited after the recheck", (c) => { c.evidence[0]!.anchor = "Sec. 1(a)"; }, ["anchor_mismatch"]],
   ];
   it.each(failures)("%s", (_name, change, expected) => {
     const issues = crossCheckRechecks(checkedCase(), [change(goodRecheck())]);
@@ -179,9 +200,53 @@ describe("crossCheckRechecks (two roles, D-002 and D-006)", () => {
     for (const i of issues) expect(i).toMatchObject({ code: "recheck_missing", severity: "block", path: ["evidence", 0] });
   });
 
+  it.each(rowChanges)("%s", (_name, change, expected) => {
+    const c = checkedCase();
+    change(c);
+    const issues = crossCheckRechecks(c, [goodRecheck()]);
+    expect(reasons(issues)).toEqual(expected);
+    for (const i of issues) expect(i).toMatchObject({ code: "recheck_missing", severity: "block", path: ["evidence", 0] });
+  });
+
+  describe("roles and dates on the row", () => {
+    it("a row that names the same roles and dates as the record passes", () => {
+      const c = checkedCase();
+      c.evidence[0]!.check = { ...c.evidence[0]!.check, checkedBy: "A", checkedAt: "2026-11-24", confirmedBy: "B", confirmedAt: "2026-11-24", confirmedUrl: URL1 };
+      expect(crossCheckRechecks(c, [goodRecheck()])).toEqual([]);
+    });
+
+    it("a row that carries no role and no date is not a mismatch", () => {
+      const c = checkedCase();
+      c.evidence[0]!.check = { ...c.evidence[0]!.check, checkedBy: null, checkedAt: null, confirmedBy: null, confirmedAt: null };
+      expect(crossCheckRechecks(c, [goodRecheck()])).toEqual([]);
+    });
+
+    it("a row that names a confirming role when the record has no second part is only confirm_missing", () => {
+      const c = checkedCase();
+      c.evidence[0]!.check = { ...c.evidence[0]!.check, confirmedBy: "B", confirmedAt: "2026-11-24" };
+      expect(reasons(crossCheckRechecks(c, [{ ...goodRecheck(), confirm: null }]))).toEqual(["confirm_missing"]);
+    });
+  });
+
+  it("any added character in the record's excerpt or anchor is a mismatch", () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1 }), (extra) => {
+        const r = goodRecheck();
+        const found = reasons(crossCheckRechecks(checkedCase(), [{ ...r, excerpt: r.excerpt + extra, anchor: extra + r.anchor }]));
+        expect(found).toEqual(["anchor_mismatch", "excerpt_mismatch"]);
+      }),
+      { numRuns: 200 },
+    );
+  });
+
   it("every reason of RECHECK_REASONS is reached by a test of this file", () => {
     const reached = new Set<string>();
     for (const [, change] of failures) for (const i of crossCheckRechecks(checkedCase(), [change(goodRecheck())])) reached.add(i.params!.reason!);
+    for (const [, change] of rowChanges) {
+      const c = checkedCase();
+      change(c);
+      for (const i of crossCheckRechecks(c, [goodRecheck()])) reached.add(i.params!.reason!);
+    }
     for (const i of crossCheckRechecks(checkedCase(), [])) reached.add(i.params!.reason!);
     const c = checkedCase();
     c.paths[1]!.absenceCheck!.confirmedBy = null;

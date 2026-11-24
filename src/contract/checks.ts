@@ -190,6 +190,10 @@ export const RECHECK_REASONS = [
   "same_role", // checkedBy and confirm.by are the same role
   "url_mismatch", // the first role opened another URL than the row's sourceUrl
   "confirm_url_mismatch", // the second role opened another URL than the row's sourceUrl
+  "anchor_mismatch", // the record's anchor is not the row's anchor, character for character
+  "excerpt_mismatch", // the record's excerpt is not the row's excerpt, character for character
+  "role_mismatch", // the row names a checking or confirming role that the record does not
+  "date_mismatch", // the row names a check or confirm date that the record does not
   "absence_role_missing", // a not_included path lacks checkedBy or confirmedBy
   "absence_same_role", // a not_included path has the same role twice
 ] as const;
@@ -236,6 +240,19 @@ export function crossCheckRechecks(c: Case, rechecks: readonly Recheck[]): Issue
       if (source === null || comparable(r.confirm.url) !== source) fail(path, "confirm_url_mismatch", e.evidenceId, say("the second role did not open the row's source URL"));
     }
     if (source === null || comparable(r.sourceUrl) !== source) fail(path, "url_mismatch", e.evidenceId, say("the first role did not open the row's source URL"));
+    // The recheck vouches for these exact words: a row changed after its recheck needs a new one.
+    // Plain string equality, no trimming and no normalization (only URLs get the look-alike fix).
+    if (r.anchor !== e.anchor) fail(path, "anchor_mismatch", e.evidenceId, say("the anchor differs from the row's anchor"));
+    if (r.excerpt !== e.excerpt) fail(path, "excerpt_mismatch", e.evidenceId, say("the excerpt differs from the row's excerpt"));
+    // The role and date the screen shows come from the row, so a value the row carries must be the record's.
+    // A row that carries none (null) is not a mismatch; the second part is judged only when the record has one.
+    const k = e.check;
+    if ((k.checkedBy !== null && k.checkedBy !== r.checkedBy) || (r.confirm !== null && k.confirmedBy !== null && k.confirmedBy !== r.confirm.by)) {
+      fail(path, "role_mismatch", e.evidenceId, say("a role on the row differs from the recorded role"));
+    }
+    if ((k.checkedAt !== null && k.checkedAt !== r.checkedAt) || (r.confirm !== null && k.confirmedAt !== null && k.confirmedAt !== r.confirm.at)) {
+      fail(path, "date_mismatch", e.evidenceId, say("a date on the row differs from the recorded date"));
+    }
   });
 
   c.paths.forEach((p, i) => {
