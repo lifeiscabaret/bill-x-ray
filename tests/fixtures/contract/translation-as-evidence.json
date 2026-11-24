@@ -1,0 +1,44 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-translation",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 701", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-701-v1",
+      "title": "가상 법안 (최초)", "publisher": "Example Parliament", "sourceKind": "official", "language": "ko"
+    },
+    {
+      "documentId": "FX 701", "versionId": "v2", "localEventLabel": null, "sourceUrl": "https://example.org/fx-701-v2",
+      "title": "가상 법안 (수정)", "publisher": "Example Parliament", "sourceKind": "official", "language": "ko"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "k-1", "documentId": "FX 701", "versionId": "v1", "anchor": "제3조", "excerpt": "",
+      "translation": { "text": "Invented clause text in English.", "language": "en" },
+      "check": { "state": "matched_official", "url": "https://example.org/fx-701-v1", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "k-2", "documentId": "FX 701", "versionId": "v1", "anchor": "제4조", "excerpt": "가상의 조항 문구입니다.",
+      "translation": { "text": "This is an invented clause.", "language": "en" },
+      "check": { "state": "matched_official", "url": "https://example.org/fx-701-v1", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-translation-only",
+      "from": { "type": "version", "documentId": "FX 701", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 701", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": ["k-1"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-original",
+      "from": { "type": "version", "documentId": "FX 701", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 701", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": ["k-2"], "reviewState": "unverified"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-same-number",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 101", "versionId": "ih", "localEventLabel": "Introduced", "sourceUrl": "https://example.org/fx-101-ih",
+      "title": "Invented Act (introduced text)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en",
+      "pastedText": "Sec. 2. Invented provision about a yearly notice."
+    },
+    {
+      "documentId": "FX 101", "versionId": "enr", "localEventLabel": "Enrolled", "sourceUrl": "https://example.org/fx-101-enr",
+      "title": "Invented Act (enrolled text)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en",
+      "pastedText": "Sec. 1. Invented title text on a different subject."
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-1", "documentId": "FX 101", "versionId": "ih", "anchor": "Sec. 2",
+      "excerpt": "Invented provision about a yearly notice.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-101-ih", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "ev-2", "documentId": "FX 101", "versionId": "enr", "anchor": "Sec. 1",
+      "excerpt": "Invented title text on a different subject.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-101-enr", "checkedBy": "B", "checkedAt": "2026-11-21", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [
+    { "eventId": "evt-1", "documentId": "FX 101", "versionId": "ih", "eventKind": "introduced", "eventDate": "2019-03-04", "evidenceRefs": [] },
+    { "eventId": "evt-2", "documentId": "FX 101", "versionId": "enr", "eventKind": "passed", "eventDate": "2020-03-27", "evidenceRefs": [] }
+  ],
+  "paths": [
+    {
+      "pathId": "p-number",
+      "from": { "type": "version", "documentId": "FX 101", "versionId": "ih" },
+      "to": { "type": "version", "documentId": "FX 101", "versionId": "enr" },
+      "kind": "next_version", "evidenceRefs": ["ev-1", "ev-2"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-clause",
+      "from": { "type": "clause", "evidenceId": "ev-1" },
+      "to": { "type": "version", "documentId": "FX 101", "versionId": "enr" },
+      "kind": "not_included", "evidenceRefs": ["ev-1", "ev-2"], "reviewState": "unverified",
+      "absenceCheck": {
+        "documentId": "FX 101", "versionId": "enr", "scope": "whole_text", "searchedFor": ["yearly notice"],
+        "checkedBy": "A", "checkedAt": "2026-11-22", "confirmedBy": null, "confirmedAt": null
+      }
+    }
+  ]
+}

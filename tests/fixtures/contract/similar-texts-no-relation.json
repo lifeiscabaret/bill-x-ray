@@ -1,0 +1,44 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-similar-texts",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 901", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-901",
+      "title": "Invented Rule (text A)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en",
+      "pastedText": "FX 901 Invented Rule. Sec. 1. The agency shall publish a yearly notice of fees."
+    },
+    {
+      "documentId": "FX 902", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-902",
+      "title": "Invented Rule (text B)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en",
+      "pastedText": "FX 902 Invented Rule. Sec. 1. The agency shall publish a yearly notice of fees."
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-a", "documentId": "FX 901", "versionId": "v1", "anchor": "Sec. 1", "excerpt": "FX 901",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "ev-b", "documentId": "FX 902", "versionId": "v1", "anchor": "Sec. 1", "excerpt": "FX 902",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-clause",
+      "from": { "type": "clause", "evidenceId": "ev-a" },
+      "to": { "type": "clause", "evidenceId": "ev-b" },
+      "kind": "carried", "evidenceRefs": ["ev-a", "ev-b"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-number",
+      "from": { "type": "version", "documentId": "FX 901", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 902", "versionId": "v1" },
+      "kind": "successor_document", "evidenceRefs": [], "reviewState": "unverified"
+    }
+  ]
+}

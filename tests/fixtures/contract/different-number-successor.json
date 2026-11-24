@@ -1,0 +1,44 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-successor",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 201", "versionId": "original", "localEventLabel": "Original bill", "sourceUrl": "https://example.org/fx-201",
+      "title": "Invented Bill (original)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 202", "versionId": "alternative", "localEventLabel": "Committee alternative", "sourceUrl": "https://example.org/fx-202",
+      "title": "Invented Bill (committee alternative)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "a-1", "documentId": "FX 201", "versionId": "original", "anchor": "Sec. 15",
+      "excerpt": "Invented infrastructure clause text.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-201", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "b-1", "documentId": "FX 202", "versionId": "alternative", "anchor": "Art. 18",
+      "excerpt": "Invented infrastructure clause text, changed.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-202", "checkedBy": "B", "checkedAt": "2026-11-21", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-number",
+      "from": { "type": "version", "documentId": "FX 201", "versionId": "original" },
+      "to": { "type": "version", "documentId": "FX 202", "versionId": "alternative" },
+      "kind": "successor_document", "evidenceRefs": ["a-1", "b-1"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-clause",
+      "from": { "type": "clause", "evidenceId": "a-1" },
+      "to": { "type": "clause", "evidenceId": "b-1" },
+      "kind": "carried", "evidenceRefs": ["a-1", "b-1"], "reviewState": "unverified"
+    }
+  ]
+}

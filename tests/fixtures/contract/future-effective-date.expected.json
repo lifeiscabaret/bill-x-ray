@@ -1,0 +1,20 @@
+{
+  "description": "With the reference date fixed at 2026-11-24, a later effective date is scheduled, never past; a year that holds the reference date is too coarse to say; only an earlier date is past. The kinds stay apart and a date of another kind gets no timing.",
+  "covers": ["8.1 a future effective date", "5.1", "5.2", "5.4", "5.5", "5.6"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [],
+  "paths": {
+    "p-number": { "kind": "next_version", "track": "number", "status": "confirmed", "drawable": true, "needs": [] }
+  },
+  "dates": {
+    "evt-effective-future": "scheduled",
+    "evt-applied-year": "too_coarse",
+    "evt-applied-next-year": "scheduled",
+    "evt-effective-past": "past",
+    "evt-effective-unknown": "unknown",
+    "evt-passed": "unknown",
+    "evt-promulgated": "unknown"
+  },
+  "excluded": []
+}

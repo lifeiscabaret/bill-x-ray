@@ -1,0 +1,22 @@
+{
+  "description": "A version without a publisher is blocked and removed, and the path to it goes with it. A version without a link stays with a warning, and evidence on it cannot pass the gate.",
+  "covers": ["8.1 a missing author or document source", "1.2", "6.1", "6.2", "6.5"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [
+    { "path": ["documents", 1, "publisher"], "code": "publisher_missing", "severity": "block" },
+    { "path": ["paths", 0, "to", "versionId"], "code": "ref_unresolved", "severity": "block" },
+    { "path": ["documents", 2, "sourceUrl"], "code": "url_missing", "severity": "warn" }
+  ],
+  "paths": {
+    "p-to-v3": { "kind": "next_version", "track": "number", "status": "not_verified", "drawable": true, "needs": ["add_official_url", "open_official_source", "record_check"] }
+  },
+  "gate": {
+    "ev-1": { "pass": true, "reasons": [] },
+    "ev-2": { "pass": false, "reasons": ["source_url_missing", "not_checked", "checker_missing"] }
+  },
+  "excluded": [
+    { "path": ["documents", 1], "reason": "publisher_missing" },
+    { "path": ["paths", 0], "reason": "ref_unresolved" }
+  ]
+}

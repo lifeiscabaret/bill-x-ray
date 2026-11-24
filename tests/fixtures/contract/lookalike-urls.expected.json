@@ -1,0 +1,25 @@
+{
+  "description": "The two look-alike characters (U+2236 for a colon, U+00B7 for a dot) are replaced in the four URL fields, each change is a warning, and the row still passes because the opened URL equals the source URL after the fix.",
+  "covers": ["8.2 look-alike URL characters", "4.4", "research-data URLs and quotes"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [
+    { "path": ["promise", "sourceUrl"], "code": "url_lookalike_fixed", "severity": "warn" },
+    { "path": ["documents", 0, "sourceUrl"], "code": "url_lookalike_fixed", "severity": "warn" },
+    { "path": ["evidence", 0, "check", "url"], "code": "url_lookalike_fixed", "severity": "warn" },
+    { "path": ["evidence", 0, "check", "confirmedUrl"], "code": "url_lookalike_fixed", "severity": "warn" }
+  ],
+  "normalized": [
+    { "path": ["promise", "sourceUrl"], "value": "https://example.org/fx-801-report" },
+    { "path": ["documents", 0, "sourceUrl"], "value": "https://example.org/fx-801-v1" },
+    { "path": ["evidence", 0, "check", "url"], "value": "https://example.org/fx-801-v1" },
+    { "path": ["evidence", 0, "check", "confirmedUrl"], "value": "https://example.org/fx-801-v1" }
+  ],
+  "paths": {
+    "p-number": { "kind": "next_version", "track": "number", "status": "confirmed", "drawable": true, "needs": [] }
+  },
+  "gate": {
+    "ev-1": { "pass": true, "reasons": [] }
+  },
+  "excluded": []
+}

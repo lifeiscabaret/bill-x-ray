@@ -1,0 +1,19 @@
+{
+  "description": "Two almost identical pasted texts with different numbers and no relation evidence. A clause path whose only evidence repeats the numbers is not confirmed, and a number path without evidence is not drawn. Parsed as a user case.",
+  "covers": ["8.2 two similar texts with no relation evidence", "2.3", "2.4", "7.5"],
+  "origin": "user",
+  "referenceDate": "2026-11-24",
+  "issues": [
+    { "path": ["paths", 0, "evidenceRefs", 0], "code": "number_or_title_as_evidence", "severity": "warn" },
+    { "path": ["paths", 0, "evidenceRefs", 1], "code": "number_or_title_as_evidence", "severity": "warn" }
+  ],
+  "paths": {
+    "p-clause": { "kind": "carried", "track": "clause", "status": "evidence_missing", "drawable": false, "needs": ["add_clause_evidence"] },
+    "p-number": { "kind": "successor_document", "track": "number", "status": "evidence_missing", "drawable": false, "needs": ["add_evidence"] }
+  },
+  "gate": {
+    "ev-a": { "pass": false, "reasons": ["pasted_text_only", "checker_missing"] },
+    "ev-b": { "pass": false, "reasons": ["pasted_text_only", "checker_missing"] }
+  },
+  "excluded": []
+}

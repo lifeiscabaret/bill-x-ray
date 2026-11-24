@@ -1,0 +1,18 @@
+{
+  "description": "An official transfer and a same outcome through a separate law sit side by side as different kinds. The separate-law path is confirmed only with passing evidence from both documents.",
+  "covers": ["8.1 an official transfer next to a separate-law outcome", "3.1", "3.6", "3.7"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [],
+  "paths": {
+    "p-transfer": { "kind": "transferred", "track": "clause", "status": "confirmed", "drawable": true, "needs": [] },
+    "p-separate": { "kind": "same_outcome_separate_law", "track": "clause", "status": "confirmed", "drawable": true, "needs": [] },
+    "p-separate-one-side": { "kind": "same_outcome_separate_law", "track": "clause", "status": "not_verified", "drawable": true, "needs": ["evidence_from_both_documents"] }
+  },
+  "gate": {
+    "s-1": { "pass": true, "reasons": [] },
+    "t-1": { "pass": true, "reasons": [] },
+    "o-1": { "pass": true, "reasons": [] }
+  },
+  "excluded": []
+}

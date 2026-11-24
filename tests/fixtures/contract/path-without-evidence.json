@@ -1,0 +1,52 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-no-evidence",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 301", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-301-v1",
+      "title": "Invented Bill (first)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 301", "versionId": "v2", "localEventLabel": null, "sourceUrl": "https://example.org/fx-301-v2",
+      "title": "Invented Bill (second)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-1", "documentId": "FX 301", "versionId": "v1", "anchor": "Sec. 3", "excerpt": "Invented clause one.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-301-v1", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "ev-2", "documentId": "FX 301", "versionId": "v2", "anchor": "Sec. 3", "excerpt": "Invented clause one, reworded.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-301-v2", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-number",
+      "from": { "type": "version", "documentId": "FX 301", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 301", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": [], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-clause",
+      "from": { "type": "clause", "evidenceId": "ev-1" },
+      "to": { "type": "clause", "evidenceId": "ev-2" },
+      "kind": "carried", "evidenceRefs": [], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-absence",
+      "from": { "type": "clause", "evidenceId": "ev-1" },
+      "to": { "type": "version", "documentId": "FX 301", "versionId": "v2" },
+      "kind": "not_included", "evidenceRefs": [], "reviewState": "unverified",
+      "absenceCheck": {
+        "documentId": "FX 301", "versionId": "v2", "scope": "whole_text", "searchedFor": ["clause one"],
+        "checkedBy": "A", "checkedAt": "2026-11-22", "confirmedBy": null, "confirmedAt": null
+      }
+    }
+  ]
+}

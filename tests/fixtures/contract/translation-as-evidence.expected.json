@@ -1,0 +1,16 @@
+{
+  "description": "A row that offers only a translation has no original excerpt and fails the gate, even with a complete check record. A row with an original excerpt passes, and its translation changes nothing.",
+  "covers": ["8.2 a translation offered as evidence", "4.1", "4.3"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [],
+  "paths": {
+    "p-translation-only": { "kind": "next_version", "track": "number", "status": "not_verified", "drawable": true, "needs": ["add_excerpt"] },
+    "p-original": { "kind": "next_version", "track": "number", "status": "confirmed", "drawable": true, "needs": [] }
+  },
+  "gate": {
+    "k-1": { "pass": false, "reasons": ["excerpt_missing"] },
+    "k-2": { "pass": true, "reasons": [] }
+  },
+  "excluded": []
+}

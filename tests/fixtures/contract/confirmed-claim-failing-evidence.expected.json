@@ -1,0 +1,21 @@
+{
+  "description": "A path recorded as confirmed whose evidence fails the gate keeps its derived status and gets a warning. A recorded confirmed whose evidence passes is confirmed without a warning.",
+  "covers": ["8.2 a recorded confirmed whose evidence fails the gate", "3.4", "3.8", "6.6"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [
+    { "path": ["paths", 0, "reviewState"], "code": "review_state_overclaim", "severity": "warn" },
+    { "path": ["paths", 1, "reviewState"], "code": "review_state_overclaim", "severity": "warn" }
+  ],
+  "paths": {
+    "p-partial": { "kind": "next_version", "track": "number", "status": "not_verified", "drawable": true, "needs": ["resolve_mismatch"] },
+    "p-not-opened": { "kind": "carried", "track": "clause", "status": "not_verified", "drawable": true, "needs": ["resolve_mismatch", "open_official_source"] },
+    "p-control": { "kind": "next_version", "track": "number", "status": "confirmed", "drawable": true, "needs": [] }
+  },
+  "gate": {
+    "ev-1": { "pass": false, "reasons": ["partial"] },
+    "ev-2": { "pass": false, "reasons": ["could_not_open"] },
+    "ev-3": { "pass": true, "reasons": [] }
+  },
+  "excluded": []
+}

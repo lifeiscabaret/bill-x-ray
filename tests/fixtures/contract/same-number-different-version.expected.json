@@ -1,0 +1,16 @@
+{
+  "description": "One number, two versions with different bodies: the number path is confirmed, and the clause of the first version is confirmed as not found in the second.",
+  "covers": ["8.1 same number but a different version", "2.1", "2.2", "3.2", "3.5"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [],
+  "paths": {
+    "p-number": { "kind": "next_version", "track": "number", "status": "confirmed", "drawable": true, "needs": [] },
+    "p-clause": { "kind": "not_included", "track": "clause", "status": "confirmed", "drawable": true, "needs": [] }
+  },
+  "gate": {
+    "ev-1": { "pass": true, "reasons": [] },
+    "ev-2": { "pass": true, "reasons": [] }
+  },
+  "excluded": []
+}

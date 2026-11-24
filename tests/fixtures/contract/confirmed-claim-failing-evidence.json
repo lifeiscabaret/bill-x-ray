@@ -1,0 +1,56 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-overclaim",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 1001", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-1001-v1",
+      "title": "Invented Bill (first)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 1001", "versionId": "v2", "localEventLabel": null, "sourceUrl": "https://example.org/fx-1001-v2",
+      "title": "Invented Bill (second)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 1002", "versionId": "law", "localEventLabel": null, "sourceUrl": "https://example.org/fx-1002-law",
+      "title": "Invented Act", "publisher": "Example Gazette", "sourceKind": "official", "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-1", "documentId": "FX 1001", "versionId": "v1", "anchor": "Sec. 1", "excerpt": "Invented clause text.",
+      "check": { "state": "partial", "url": "https://example.org/fx-1001-v1", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "ev-2", "documentId": "FX 1002", "versionId": "law", "anchor": "Art. 5", "excerpt": "Invented clause text, in the Act.",
+      "check": { "state": "could_not_open", "url": "https://example.org/fx-1002-law", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "ev-3", "documentId": "FX 1001", "versionId": "v2", "anchor": "Sec. 1", "excerpt": "Invented clause text, reworded.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-1001-v2", "checkedBy": "B", "checkedAt": "2026-11-21", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-partial",
+      "from": { "type": "version", "documentId": "FX 1001", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 1001", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": ["ev-1"], "reviewState": "confirmed"
+    },
+    {
+      "pathId": "p-not-opened",
+      "from": { "type": "clause", "evidenceId": "ev-1" },
+      "to": { "type": "clause", "evidenceId": "ev-2" },
+      "kind": "carried", "evidenceRefs": ["ev-1", "ev-2"], "reviewState": "confirmed"
+    },
+    {
+      "pathId": "p-control",
+      "from": { "type": "version", "documentId": "FX 1001", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 1001", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": ["ev-3"], "reviewState": "confirmed"
+    }
+  ]
+}

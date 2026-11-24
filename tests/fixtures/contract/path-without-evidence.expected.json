@@ -1,0 +1,13 @@
+{
+  "description": "Paths with no evidence rows are 'Evidence missing' and not drawn, whatever their kind, and even when an absence check is recorded.",
+  "covers": ["8.1 a path without evidence", "3.3", "3.7"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [],
+  "paths": {
+    "p-number": { "kind": "next_version", "track": "number", "status": "evidence_missing", "drawable": false, "needs": ["add_evidence"] },
+    "p-clause": { "kind": "carried", "track": "clause", "status": "evidence_missing", "drawable": false, "needs": ["add_evidence"] },
+    "p-absence": { "kind": "not_included", "track": "clause", "status": "evidence_missing", "drawable": false, "needs": ["add_evidence"] }
+  },
+  "excluded": []
+}

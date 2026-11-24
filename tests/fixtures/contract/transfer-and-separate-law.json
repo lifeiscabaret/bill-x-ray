@@ -1,0 +1,56 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-transfer",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 601", "versionId": "ih", "localEventLabel": null, "sourceUrl": "https://example.org/fx-601-ih",
+      "title": "Invented Bill (introduced)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 602", "versionId": "enr", "localEventLabel": null, "sourceUrl": "https://example.org/fx-602-enr",
+      "title": "Invented Act A", "publisher": "Example Gazette", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 603", "versionId": "enr", "localEventLabel": null, "sourceUrl": "https://example.org/fx-603-enr",
+      "title": "Invented Act B", "publisher": "Example Gazette", "sourceKind": "official", "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "s-1", "documentId": "FX 601", "versionId": "ih", "anchor": "Sec. 2", "excerpt": "Invented repeal clause text.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-601-ih", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "t-1", "documentId": "FX 602", "versionId": "enr", "anchor": "Sec. 9", "excerpt": "Invented repeal clause text, moved here.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-602-enr", "checkedBy": "B", "checkedAt": "2026-11-21", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "o-1", "documentId": "FX 603", "versionId": "enr", "anchor": "Div. N Sec. 503", "excerpt": "Invented separate repeal text.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-603-enr", "checkedBy": "B", "checkedAt": "2026-11-21", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-transfer",
+      "from": { "type": "clause", "evidenceId": "s-1" },
+      "to": { "type": "clause", "evidenceId": "t-1" },
+      "kind": "transferred", "evidenceRefs": ["s-1", "t-1"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-separate",
+      "from": { "type": "clause", "evidenceId": "s-1" },
+      "to": { "type": "clause", "evidenceId": "o-1" },
+      "kind": "same_outcome_separate_law", "evidenceRefs": ["s-1", "o-1"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-separate-one-side",
+      "from": { "type": "clause", "evidenceId": "s-1" },
+      "to": { "type": "clause", "evidenceId": "o-1" },
+      "kind": "same_outcome_separate_law", "evidenceRefs": ["o-1"], "reviewState": "unverified"
+    }
+  ]
+}

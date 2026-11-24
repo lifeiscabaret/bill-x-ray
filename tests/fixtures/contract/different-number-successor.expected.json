@@ -1,0 +1,16 @@
+{
+  "description": "A different number continues the first: a successor document on the number track and a carried clause on the clause track, kept apart and each confirmed by its own evidence.",
+  "covers": ["8.1 a different number that is a legitimate successor", "2.1", "2.2", "3.1"],
+  "origin": "bundled",
+  "referenceDate": "2026-11-24",
+  "issues": [],
+  "paths": {
+    "p-number": { "kind": "successor_document", "track": "number", "status": "confirmed", "drawable": true, "needs": [] },
+    "p-clause": { "kind": "carried", "track": "clause", "status": "confirmed", "drawable": true, "needs": [] }
+  },
+  "gate": {
+    "a-1": { "pass": true, "reasons": [] },
+    "b-1": { "pass": true, "reasons": [] }
+  },
+  "excluded": []
+}

@@ -1,0 +1,45 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-future-date",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 501", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-501-v1",
+      "title": "Invented Bill (first)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 501", "versionId": "v2", "localEventLabel": null, "sourceUrl": "https://example.org/fx-501-v2",
+      "title": "Invented Bill (second)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 502", "versionId": "law", "localEventLabel": null, "sourceUrl": "https://example.org/fx-502-law",
+      "title": "Invented Act", "publisher": "Example Gazette", "sourceKind": "official", "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-1", "documentId": "FX 501", "versionId": "v1", "anchor": "Sec. 1", "excerpt": "Invented clause text.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-501-v1", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [
+    { "eventId": "evt-passed", "documentId": "FX 501", "versionId": "v2", "eventKind": "passed", "eventDate": "2026-01-15", "evidenceRefs": [] },
+    { "eventId": "evt-promulgated", "documentId": "FX 502", "versionId": "law", "eventKind": "promulgated", "eventDate": "2026-02-12", "evidenceRefs": [] },
+    { "eventId": "evt-effective-future", "documentId": "FX 502", "versionId": "law", "eventKind": "effective", "eventDate": "2027-03-01", "evidenceRefs": [] },
+    { "eventId": "evt-applied-year", "documentId": "FX 502", "versionId": "law", "eventKind": "applied", "eventDate": "2026", "evidenceRefs": [] },
+    { "eventId": "evt-applied-next-year", "documentId": "FX 501", "versionId": "v1", "eventKind": "applied", "eventDate": "2028", "evidenceRefs": [] },
+    { "eventId": "evt-effective-past", "documentId": "FX 501", "versionId": "v2", "eventKind": "effective", "eventDate": "2025-07-22", "evidenceRefs": [] },
+    { "eventId": "evt-effective-unknown", "documentId": "FX 501", "versionId": "v1", "eventKind": "effective", "eventDate": "unknown", "evidenceRefs": [] }
+  ],
+  "paths": [
+    {
+      "pathId": "p-number",
+      "from": { "type": "version", "documentId": "FX 501", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 501", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": ["ev-1"], "reviewState": "unverified",
+      "note": "Effective date set for the later law."
+    }
+  ]
+}

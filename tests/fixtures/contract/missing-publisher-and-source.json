@@ -1,0 +1,46 @@
+{
+  "contractVersion": 1,
+  "caseId": "fixture-missing-source",
+  "title": "Synthetic fixture",
+  "jurisdiction": "XX",
+  "session": null,
+  "documents": [
+    {
+      "documentId": "FX 401", "versionId": "v1", "localEventLabel": null, "sourceUrl": "https://example.org/fx-401-v1",
+      "title": "Invented Bill (first)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 401", "versionId": "v2", "localEventLabel": null, "sourceUrl": "https://example.org/fx-401-v2",
+      "title": "Invented Bill (second, no publisher)", "sourceKind": "official", "language": "en"
+    },
+    {
+      "documentId": "FX 401", "versionId": "v3", "localEventLabel": null, "sourceUrl": null,
+      "title": "Invented Bill (third, no link)", "publisher": "Example Parliament", "sourceKind": "official", "language": "en"
+    }
+  ],
+  "evidence": [
+    {
+      "evidenceId": "ev-1", "documentId": "FX 401", "versionId": "v1", "anchor": "Sec. 1", "excerpt": "Invented clause text.",
+      "check": { "state": "matched_official", "url": "https://example.org/fx-401-v1", "checkedBy": "A", "checkedAt": "2026-11-20", "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    },
+    {
+      "evidenceId": "ev-2", "documentId": "FX 401", "versionId": "v3", "anchor": "Sec. 1", "excerpt": "Invented clause text, reworded.",
+      "check": { "state": "not_checked", "url": null, "checkedBy": null, "checkedAt": null, "confirmedBy": null, "confirmedAt": null, "confirmedUrl": null }
+    }
+  ],
+  "events": [],
+  "paths": [
+    {
+      "pathId": "p-to-v2",
+      "from": { "type": "version", "documentId": "FX 401", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 401", "versionId": "v2" },
+      "kind": "next_version", "evidenceRefs": ["ev-1"], "reviewState": "unverified"
+    },
+    {
+      "pathId": "p-to-v3",
+      "from": { "type": "version", "documentId": "FX 401", "versionId": "v1" },
+      "to": { "type": "version", "documentId": "FX 401", "versionId": "v3" },
+      "kind": "next_version", "evidenceRefs": ["ev-1", "ev-2"], "reviewState": "unverified"
+    }
+  ]
+}
